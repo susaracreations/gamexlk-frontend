@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { api, debounce } from '../utils/api';
 import { Game, GamesResponse } from '../types';
 import GameCard from '../components/GameCard';
+import Breadcrumb from '../components/Breadcrumb';
 
 interface AllProductsPageProps {
     onToast: (msg: string, type: string) => void;
@@ -12,6 +13,7 @@ const GENRES = ['Action', 'Adventure', 'RPG', 'Strategy', 'Sports', 'Racing', 'F
 const PLATFORMS = ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X', 'Xbox One', 'Nintendo Switch', 'Mobile', 'Multi-platform'];
 
 const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [games, setGames] = useState<Game[]>([]);
     const [loading, setLoading] = useState(true);
@@ -67,6 +69,13 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
     return (
         <main className="container section" style={{ paddingTop: '100px', minHeight: '90vh' }}>
             <h1 className="section-title">All Products</h1>
+
+            <Breadcrumb
+                items={[
+                    { label: 'Home', icon: '🏠', onClick: () => navigate('/') },
+                    { label: 'All Products' }
+                ]}
+            />
 
             <div className="glass-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
                 <div className="filters-inner">

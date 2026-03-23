@@ -28,6 +28,7 @@ const Footer: React.FC = () => {
         <div className="footer-col">
           <h4>Support</h4>
           <ul>
+            <Link to="/about">About Us</Link>
             <li><Link to="/signin">User Sign In</Link></li>
             <li><Link to="/login">Admin Login</Link></li>
             <li><a href="mailto:support@gamexlk.com">Contact Support</a></li>

@@ -48,6 +48,7 @@ const Navbar: React.FC = () => {
         <div className={`nav-links ${isOpen ? 'active' : ''}`}>
           <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
           <Link to="/products" className={location.pathname === '/products' ? 'active' : ''}>Products</Link>
+          <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About</Link>
           <Link to="/checkout" className="mobile-only">Cart ({cartCount})</Link>
         </div>
 

@@ -3,6 +3,7 @@ import { api, debounce } from '../utils/api';
 import { Game, GamesResponse, StatsResponse } from '../types';
 import GameCard from '../components/GameCard';
 import HeroCarousel from '../components/HeroCarousel';
+import Breadcrumb from '../components/Breadcrumb';
 
 interface HomePageProps {
   onToast: (msg: string, type: string) => void;
@@ -115,6 +116,12 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
       {/* Games Grid */}
       <main className="container section" id="store">
         <h2 className="section-title">Our Products</h2>
+        <Breadcrumb
+          items={[
+            { label: 'Home', icon: '🏠', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
+            { label: 'Store' }
+          ]}
+        />
         <div className="glass-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
           <div className="filters-inner">
             <div className="search-bar">
@@ -140,7 +147,11 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
             </span>
           </div>
         </div>
-        <div className="games-grid">
+        <div className="games-grid" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+          gap: '1.5rem'
+        }}>
           {loading ? (
             <div className="loading-state" style={{ gridColumn: '1/-1' }}>
               <div className="spinner" />
