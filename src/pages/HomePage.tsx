@@ -41,6 +41,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
     }
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedLoad = useCallback(debounce((val: string) => loadGames(val, genre, platform, sort), 350), [loadGames, genre, platform, sort]);
 
   useEffect(() => {

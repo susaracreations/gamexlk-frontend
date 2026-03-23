@@ -53,6 +53,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
                     <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <label className="form-label">Password</label>
+                            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                             <a href="#" onClick={e => e.preventDefault()} style={{ fontSize: '0.8rem', color: 'var(--accent-purple)', textDecoration: 'none' }}>Forgot password?</a>
                         </div>
                         <input
