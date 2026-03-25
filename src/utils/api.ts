@@ -7,8 +7,10 @@ const BASE_URL = process.env.REACT_APP_API_URL || '';
 
 export const api = {
   async get<T>(url: string): Promise<T> {
-    const res = await fetch(`${BASE_URL}${url}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const res = await fetch(`${BASE_URL}${url}`, {
+      headers: getAuthHeader(),
+    });
+    if (!res.ok && res.status !== 401) throw new Error(`HTTP ${res.status}`);
     return res.json();
   },
 

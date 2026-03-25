@@ -6,6 +6,7 @@ import { Cart } from '../utils/cart';
 import StarRating from '../components/StarRating';
 import GameCard from '../components/GameCard';
 import Breadcrumb from '../components/Breadcrumb';
+// Ensure useState and useEffect are imported from 'react'
 
 interface GameDetailPageProps {
   onToast: (msg: string, type: string) => void;
@@ -18,19 +19,26 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
   const [related, setRelated] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [wishlisted, setWishlisted] = useState(false);
+  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [isInWishlist, setIsInWishlist] = useState(false);
 
   useEffect(() => {
     if (!id) { navigate('/'); return; }
     document.title = 'Game Details — Gamexlk Store';
     setLoading(true);
+
+    const auth = localStorage.getItem('userAuth');
+    if (auth) {
+      const userData = JSON.parse(auth);
+      setUser(userData);
+      checkWishlistStatus(userData.email);
+    }
+
     api.get<any>(`/api/games/${id}`)
       .then(data => {
         if (!data.success) throw new Error(data.error || 'Game not found');
         setGame(data.game);
         document.title = `${data.game.title} — Gamexlk Store`;
-        const wl = JSON.parse(localStorage.getItem('gxWishlist') || '[]');
-        setWishlisted(wl.includes(id));
         return api.get<any>(`/api/games?genre=${data.game.genre}`);
       })
       .then(d => setRelated((d.games || []).filter((g: Game) => g.id !== id).slice(0, 4)))
@@ -38,13 +46,49 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
-  const toggleWishlist = () => {
-    if (!game) return;
-    const list: string[] = JSON.parse(localStorage.getItem('gxWishlist') || '[]');
-    const idx = list.indexOf(game.id);
-    if (idx === -1) { list.push(game.id); onToast(`${game.title} added to wishlist!`, 'info'); setWishlisted(true); }
-    else { list.splice(idx, 1); onToast(`${game.title} removed from wishlist.`, 'info'); setWishlisted(false); }
-    localStorage.setItem('gxWishlist', JSON.stringify(list));
+  const checkWishlistStatus = async (email: string) => {
+    if (!id) return;
+    try {
+      const res = await api.get<any>(`/api/wishlist?email=${encodeURIComponent(email)}`);
+      if (res.success && Array.isArray(res.wishlist)) {
+        const found = res.wishlist.some((g: any) => String(g.id) === String(id));
+        setIsInWishlist(found);
+      }
+    } catch (error) {
+      console.error('Error checking wishlist:', error);
+    }
+  };
+
+  const toggleWishlist = async () => {
+    if (!user?.email) {
+      onToast("Please log in to add to wishlist!", "error");
+      return;
+    }
+
+    if (isInWishlist) {
+      try {
+        const res = await api.del<any>(`/api/wishlist/${id}?email=${encodeURIComponent(user.email)}`);
+        if (res.success) {
+          setIsInWishlist(false);
+          onToast(`${game?.title} removed from wishlist.`, 'info');
+        }
+      } catch (err) {
+        console.error("Failed to remove:", err);
+      }
+    } else {
+      try {
+        const payload = { email: user.email, gameId: id };
+        const res = await api.post<any>('/api/wishlist', payload);
+        if (res.success) {
+          setIsInWishlist(true);
+          onToast(`${game?.title} added to wishlist!`, 'info');
+        } else {
+          onToast(`Failed to add: ${res.error}`, "error");
+        }
+      } catch (err) {
+        console.error("Failed to add:", err);
+      }
+    }
   };
 
   if (loading) return (
@@ -162,8 +206,12 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
                 <button className="btn btn-primary" style={{ flex: 1, justifyContent: 'center', height: '50px', fontSize: '1rem' }} onClick={() => Cart.add(game, onToast)}>
                   Add to Cart
                 </button>
-                <button onClick={toggleWishlist} style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)', background: wishlisted ? 'rgba(236, 72, 153, 0.2)' : 'transparent', color: wishlisted ? 'var(--accent-pink)' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.2rem', transition: 'all 0.2s' }}>
-                  {wishlisted ? '♥' : '♡'}
+                <button 
+                  className={`btn ${isInWishlist ? 'btn-danger' : 'btn-secondary'}`}
+                  onClick={toggleWishlist}
+                  style={{ flex: 1, justifyContent: 'center', height: '50px', fontSize: '0.9rem' }}
+                >
+                  {isInWishlist ? '❤️ In Wishlist' : '🤍 Add to Wishlist'}
                 </button>
               </div>
             </div>

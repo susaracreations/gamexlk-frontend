@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cart } from '../utils/cart';
+import { api } from '../utils/api';
 import { CartItem } from '../types';
 
 interface CheckoutPageProps {
@@ -9,11 +10,22 @@ interface CheckoutPageProps {
 
 const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
   const [items, setItems] = useState<CartItem[]>(Cart.get());
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    whatsapp: '',
+    discord: ''
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'Checkout — Gamexlk Store';
   }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const total = items.reduce((s, i) => s + Number(i.price), 0);
 
@@ -23,9 +35,31 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
     onToast('Item removed', 'info');
   };
 
-  const handlePayment = (e: React.FormEvent) => {
+  const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    onToast('Order placed successfully! (Demo)', 'success');
+
+    try {
+      const payload = {
+        buyer_name: formData.fullName,
+        buyer_email: formData.email,
+        buyer_whatsapp: formData.whatsapp,
+        buyer_discord: formData.discord,
+        total_amount: total,
+        items: items
+      };
+
+      const res = await api.post<any>('/api/orders', payload);
+      if (res.success) {
+        onToast('Order placed successfully!', 'success');
+        items.forEach(i => Cart.remove(i.id));
+        setItems([]);
+        setTimeout(() => navigate('/'), 2000);
+      } else {
+        onToast(res.error || 'Failed to place order', 'error');
+      }
+    } catch (err) {
+      onToast('Failed to connect to server', 'error');
+    }
   };
 
   const generatePDF = () => {
@@ -62,6 +96,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
               <h1 class="invoice-title">INVOICE</h1>
               <p class="meta">Date: ${new Date().toLocaleDateString()}</p>
               <p class="meta">Order ID: #${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}</p>
+              <p class="meta">Billed To: ${formData.fullName || 'Guest'}</p>
             </div>
           </div>
           <table>
@@ -83,9 +118,10 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
 
   const sendWhatsApp = () => {
     const text = encodeURIComponent(
-      "Hi, I'd like to place an order:\n\n" +
+      `Hi, I'm ${formData.fullName || 'a customer'}. I'd like to place an order:\n\n` +
       items.map(i => `• ${i.title} - LKR ${i.price}`).join('\n') +
-      `\n\nTotal: LKR ${total.toFixed(2)}`
+      `\n\nTotal: LKR ${total.toFixed(2)}` +
+      (formData.discord ? `\nDiscord: ${formData.discord}` : '')
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
@@ -144,21 +180,57 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
 
               <form className="checkout-form" onSubmit={handlePayment}>
                 <div className="form-group">
-                  <label className="form-label">Email Address</label>
-                  <input type="email" className="form-control" placeholder="john@example.com" required />
+                  <label className="form-label">Full Name</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    className="form-control"
+                    placeholder="John Doe"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Card Details</label>
-                  <input type="text" className="form-control" placeholder="0000 0000 0000 0000" maxLength={19} required />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '0.5rem' }}>
-                    <input type="text" className="form-control" placeholder="MM/YY" maxLength={5} required />
-                    <input type="text" className="form-control" placeholder="CVC" maxLength={4} required />
-                  </div>
+                  <label className="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="form-control"
+                    placeholder="john@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
-                <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>Confirm Payment</button>
+                <div className="form-group">
+                  <label className="form-label">WhatsApp Number</label>
+                  <input
+                    type="tel"
+                    name="whatsapp"
+                    className="form-control"
+                    placeholder="+94 7X XXX XXXX"
+                    value={formData.whatsapp}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Discord Username <span style={{ color: 'var(--text-secondary)', fontSize: '0.85em' }}>(Optional)</span></label>
+                  <input
+                    type="text"
+                    name="discord"
+                    className="form-control"
+                    placeholder="username#0000"
+                    value={formData.discord}
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>Place Order</button>
                 <div className="payment-methods">
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={generatePDF}>📄 PDF</button>
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={sendWhatsApp} style={{ color: '#25D366', borderColor: 'rgba(37, 211, 102, 0.3)' }}>💬 WhatsApp</button>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={generatePDF}>📄 Generate Invoice</button>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={sendWhatsApp} style={{ color: '#25D366', borderColor: 'rgba(37, 211, 102, 0.3)' }}>💬 Order via WhatsApp</button>
                 </div>
               </form>
             </div>

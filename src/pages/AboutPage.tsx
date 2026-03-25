@@ -16,7 +16,7 @@ const AboutPage: React.FC = () => {
 
             <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                 <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                    <h1 style={{ fontSize: '3rem', marginBottom: '1.5rem', background: 'linear-gradient(to right, #fff, #aaa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>About Gamexlk Store</h1>
+                    <h1 style={{ fontSize: '3rem', marginBottom: '1.5rem', background: 'linear-gradient(to right, #fff, #aaa)', backgroundClip: 'text', WebkitBackgroundClip: 'text', color: 'transparent', WebkitTextFillColor: 'transparent' }}>About Gamexlk Store</h1>
                     <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '600px', margin: '0 auto' }}>
                         Your ultimate destination for digital games, software, and gift cards in Sri Lanka.
                         We are dedicated to providing the best gaming experience with instant delivery.
@@ -69,7 +69,7 @@ const AboutPage: React.FC = () => {
                     </p>
                     <button
                         onClick={() => window.location.href = 'mailto:support@gamexlk.com'}
-                        style={{ background: 'white', color: 'var(--primary-color)', fontWeight: 600, padding: '1rem 2rem', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer', fontSize: '1rem', transition: 'transform 0.2s' }}
+                        style={{ background: 'white', color: 'black', fontWeight: 600, padding: '1rem 2rem', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer', fontSize: '1rem', transition: 'transform 0.2s' }}
                     >
                         Contact Support
                     </button>
