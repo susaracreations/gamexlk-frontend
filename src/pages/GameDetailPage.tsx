@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { Game } from '../types';
@@ -22,6 +22,19 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
   const [user, setUser] = useState<{ email: string } | null>(null);
   const [isInWishlist, setIsInWishlist] = useState(false);
 
+  const checkWishlistStatus = useCallback(async (email: string) => {
+    if (!id) return;
+    try {
+      const res = await api.get<any>(`/api/wishlist?email=${encodeURIComponent(email)}`);
+      if (res.success && Array.isArray(res.wishlist)) {
+        const found = res.wishlist.some((g: any) => String(g.id) === String(id));
+        setIsInWishlist(found);
+      }
+    } catch (error) {
+      console.error('Error checking wishlist:', error);
+    }
+  }, [id]);
+
   useEffect(() => {
     if (!id) { navigate('/'); return; }
     document.title = 'Game Details — Gamexlk Store';
@@ -44,20 +57,7 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
       .then(d => setRelated((d.games || []).filter((g: Game) => g.id !== id).slice(0, 4)))
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
-  }, [id, navigate]);
-
-  const checkWishlistStatus = async (email: string) => {
-    if (!id) return;
-    try {
-      const res = await api.get<any>(`/api/wishlist?email=${encodeURIComponent(email)}`);
-      if (res.success && Array.isArray(res.wishlist)) {
-        const found = res.wishlist.some((g: any) => String(g.id) === String(id));
-        setIsInWishlist(found);
-      }
-    } catch (error) {
-      console.error('Error checking wishlist:', error);
-    }
-  };
+  }, [id, navigate, checkWishlistStatus]);
 
   const toggleWishlist = async () => {
     if (!user?.email) {
