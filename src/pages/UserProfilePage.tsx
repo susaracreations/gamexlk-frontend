@@ -16,7 +16,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
     const [loadingWishlist, setLoadingWishlist] = useState(false);
 
     useEffect(() => {
-        document.title = 'My Profile — Gamexlk Store';
+        document.title = 'My Profile | GamexLK Store';
         const auth = localStorage.getItem('userAuth');
         if (!auth) {
             navigate('/signin');

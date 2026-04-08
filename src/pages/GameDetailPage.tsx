@@ -37,7 +37,7 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
 
   useEffect(() => {
     if (!id) { navigate('/'); return; }
-    document.title = 'Game Details — Gamexlk Store';
+    document.title = 'Game Details | GamexLK Store';
     setLoading(true);
 
     const auth = localStorage.getItem('userAuth');
@@ -51,7 +51,7 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
       .then(data => {
         if (!data.success) throw new Error(data.error || 'Game not found');
         setGame(data.game);
-        document.title = `${data.game.title} — Gamexlk Store`;
+        document.title = `${data.game.title} | GamexLK Store`;
         return api.get<any>(`/api/games?genre=${data.game.genre}`);
       })
       .then(d => setRelated((d.games || []).filter((g: Game) => g.id !== id).slice(0, 4)))

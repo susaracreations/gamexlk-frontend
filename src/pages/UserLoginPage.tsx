@@ -15,7 +15,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        document.title = 'Sign In — Gamexlk Store';
+        document.title = 'Sign In | GamexLK Store';
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {

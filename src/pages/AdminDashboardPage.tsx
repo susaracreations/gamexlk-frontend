@@ -44,7 +44,7 @@ const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onToast }) => {
     }, [onToast]);
 
     useEffect(() => {
-        document.title = 'Admin Dashboard — Gamexlk Store';
+        document.title = 'Admin Dashboard | GamexLK Store';
         if (!localStorage.getItem('authToken')) {
             navigate('/login');
             return;

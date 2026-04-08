@@ -10,6 +10,7 @@ import { useToast } from './hooks/useToast';
 import HomePage from './pages/HomePage';
 import GameDetailPage from './pages/GameDetailPage';
 import AdminLoginPage from './pages/AdminLoginPage';
+import NoticeBar from './components/NoticeBar';
 import UserLoginPage from './pages/UserLoginPage';
 import UserSignUpPage from './pages/UserSignUpPage';
 import UserProfilePage from './pages/UserProfilePage';
@@ -48,6 +49,7 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
+      <NoticeBar />
       <Navbar />
       <ToastContainer toasts={toasts} onRemove={removeToast} />
 

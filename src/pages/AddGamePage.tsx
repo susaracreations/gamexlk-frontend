@@ -26,7 +26,7 @@ const AddGamePage: React.FC<AddGamePageProps> = ({ onToast }) => {
   });
 
   useEffect(() => {
-    document.title = isEdit ? 'Edit Game — Gamexlk Store' : 'Add Game — Gamexlk Store';
+    document.title = isEdit ? 'Edit Game | GamexLK Store' : 'Add Game | GamexLK Store';
     if (!localStorage.getItem('authToken')) { navigate('/login'); return; }
     if (isEdit) {
       api.get<any>(`/api/games/${editId}`).then(data => {

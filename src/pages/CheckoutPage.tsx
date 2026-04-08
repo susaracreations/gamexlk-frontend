@@ -19,7 +19,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = 'Checkout — Gamexlk Store';
+    document.title = 'Checkout | GamexLK Store';
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

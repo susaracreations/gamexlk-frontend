@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Breadcrumb from '../components/Breadcrumb';
 
 const AboutPage: React.FC = () => {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.title = 'About Us | GamexLK Store';
+    }, []);
 
     return (
         <main className="container" style={{ paddingTop: '100px', paddingBottom: '4rem' }}>
@@ -68,7 +72,7 @@ const AboutPage: React.FC = () => {
                         Need help with an order or have a general inquiry? We are here to help.
                     </p>
                     <button
-                        onClick={() => window.location.href = 'mailto:support@gamexlk.com'}
+                        onClick={() => window.location.href = 'mailto:[EMAIL_ADDRESS]'}
                         style={{ background: 'white', color: 'black', fontWeight: 600, padding: '1rem 2rem', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer', fontSize: '1rem', transition: 'transform 0.2s' }}
                     >
                         Contact Support

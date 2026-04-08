@@ -23,7 +23,6 @@ const HOMEPAGE_BANNERS = [
 const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   const [games, setGames] = useState<Game[]>([]);
   const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [total, setTotal] = useState(0);
   const [stats, setStats] = useState<{ total: number; genres: number; platforms: number } | null>(null);
@@ -36,7 +35,6 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   const isLoggedIn = !!localStorage.getItem('authToken');
 
   const loadGames = useCallback(async (s: string, g: string, p: string, so: string) => {
-    setLoading(true);
     setError('');
     try {
       const params = new URLSearchParams({ genre: g || 'all', platform: p || 'all', search: s, sort: so || 'newest' });
@@ -45,8 +43,6 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
       setTotal(data.total);
     } catch (err: any) {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -54,7 +50,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   const debouncedLoad = useCallback(debounce((val: string) => loadGames(val, genre, platform, sort), 350), [loadGames, genre, platform, sort]);
 
   useEffect(() => {
-    document.title = 'Home — Gamexlk Store';
+    document.title = 'GamexLK Store';
     loadGames(search, genre, platform, sort);
     api.get<GamesResponse>('/api/games?sort=rating').then(d => setFeaturedGames((d.games || []).slice(0, 5))).catch(() => { });
     api.get<StatsResponse>('/api/stats').then(d => {
@@ -154,7 +150,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
               <option value="price-desc">Price ↓</option>
             </select>
             <span className="filter-count">
-              {loading ? 'Loading...' : games.length === total ? `${total} game${total !== 1 ? 's' : ''}` : `${games.length} of ${total} games`}
+              {games.length === total ? `${total} game${total !== 1 ? 's' : ''}` : `${games.length} of ${total} games`}
             </span>
           </div>
         </div>
@@ -163,12 +159,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
           gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
           gap: '1.5rem'
         }}>
-          {loading ? (
-            <div className="loading-state" style={{ gridColumn: '1/-1' }}>
-              <div className="spinner" />
-              <p>Loading games...</p>
-            </div>
-          ) : error ? (
+          {error ? (
             <div className="empty-state" style={{ gridColumn: '1/-1' }}>
               <div className="icon">⚠️</div>
               <h3>Something went wrong</h3>

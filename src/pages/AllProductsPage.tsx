@@ -43,7 +43,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
     const debouncedLoad = useCallback(debounce((val: string) => loadGames(val, genre, platform, sort), 350), [loadGames, genre, platform, sort]);
 
     useEffect(() => {
-        document.title = 'All Products — Gamexlk Store';
+        document.title = 'All Products | GamexLK Store';
         loadGames(search, genre, platform, sort);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

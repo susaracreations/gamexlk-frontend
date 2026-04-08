@@ -7,7 +7,10 @@ const Footer: React.FC = () => {
       <div className="container footer-grid">
         {/* Brand Column */}
         <div className="footer-col brand-col">
-          <h3>Game<span className="highlight">xlk</span></h3>
+          <h3 className="footer-brand">
+            <img src="https://i.ibb.co/4gdjwSnX/ce86813e11e7.webp" alt="Gamexlk Logo" className="logo-img" />
+            <span>Gamex<span className="highlight">LK</span></span>
+          </h3>
           <p>
             Your trusted destination for digital games.
             Experience the next level of gaming with curated collections, instant delivery, and secure payments.
@@ -44,8 +47,8 @@ const Footer: React.FC = () => {
         {/* Contact Column */}
         <div className="footer-col">
           <h4>Contact Us</h4>
-          <p className="contact-info">Email: support@gamexlk.com</p>
-          <p className="contact-info">Colombo, Sri Lanka</p>
+          <p className="contact-info">Email: [EMAIL_ADDRESS]</p>
+          <p className="contact-info">Sri Lanka</p>
         </div>
       </div>
 
@@ -53,6 +56,10 @@ const Footer: React.FC = () => {
       <div className="footer-bottom">
         <div className="container">
           <p>&copy; {new Date().getFullYear()} Gamexlk. All rights reserved.</p>
+          <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', opacity: 0.8 }}>
+            Website developed & published by{' '}
+            <a href="https://susaracreations.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-purple-light)', fontWeight: 600 }}>Susara Creations</a>
+          </p>
         </div>
       </div>
     </footer>

@@ -12,7 +12,7 @@ const AdminLoginPage: React.FC<LoginPageProps> = ({ onToast }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = 'Admin Login — Gamexlk Store';
+    document.title = 'Admin Login | GamexLK Store';
     if (localStorage.getItem('authToken')) navigate('/admin');
   }, [navigate]);
 

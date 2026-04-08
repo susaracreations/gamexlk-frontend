@@ -42,7 +42,14 @@ const Navbar: React.FC = () => {
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container navbar-inner">
         {/* Logo */}
-        <Link to="/" className="nav-logo">Game<span className="highlight">xlk</span></Link>
+        <Link to="/" className="nav-logo">
+          <img
+            src="https://i.ibb.co/4gdjwSnX/ce86813e11e7.webp"
+            alt="Gamexlk Logo"
+            className="logo-img"
+          />
+          <span>Gamex<span className="highlight">LK</span></span>
+        </Link>
 
         {/* Links */}
         <div className={`nav-links ${isOpen ? 'active' : ''}`}>

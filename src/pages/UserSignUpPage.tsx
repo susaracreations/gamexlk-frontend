@@ -17,7 +17,7 @@ const UserSignUpPage: React.FC<UserSignUpPageProps> = ({ onToast }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        document.title = 'Create Account — Gamexlk Store';
+        document.title = 'Create Account | GamexLK Store';
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

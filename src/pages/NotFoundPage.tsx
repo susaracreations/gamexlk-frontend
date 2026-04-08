@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const NotFoundPage: React.FC = () => {
     useEffect(() => {
-        document.title = '404 Not Found — Gamexlk Store';
+        document.title = '404 Not Found | GamexLK Store';
     }, []);
 
     return (
