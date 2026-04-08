@@ -46,9 +46,9 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
     .opacity-5 { opacity: 0.05; }
     .saturate-200 { filter: saturate(200%); }
     
-    .rounded-\[--radius-xl\] { border-radius: var(--radius-xl); }
+    .rounded-[--radius-xl] { border-radius: var(--radius-xl); }
     .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-    .shadow-black\/50 { shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
+    .shadow-black/50 { shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
     .bg-secondary { background: var(--bg-secondary); }
     .border-glass { border: 1px solid var(--glass-border); }
 
