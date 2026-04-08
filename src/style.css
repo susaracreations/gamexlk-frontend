@@ -1839,3 +1839,94 @@ textarea.form-control {
     gap: 1rem;
   }
 }
+
+/* Styles for the hero dots navigation */
+.hero-dots {
+  position: absolute;
+  bottom: 20px; /* Adjust as needed for vertical positioning */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2; /* Ensure dots are above the banners */
+  display: flex;
+  gap: 10px; /* Space between dots */
+  padding: 8px 12px; /* Padding around the dots container */
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background for better visibility */
+  border-radius: 20px; /* Rounded corners for the container */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+}
+
+.hero-dot {
+  width: 10px; /* Size of the dot */
+  height: 10px; /* Size of the dot */
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6); /* Default dot color */
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  outline: none; /* Remove default outline on focus */
+}
+
+.hero-dot:hover {
+  background-color: rgba(255, 255, 255, 0.9); /* Lighter on hover */
+  transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+.hero-dot.active {
+  background-color: var(--accent-purple); /* Active dot color, using your accent color */
+  transform: scale(1.2); /* Slightly larger for active dot */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); /* White halo around active dot */
+}
+
+/* Progress ring for the active dot */
+.hero-progress-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-90deg); /* Center and start from top */
+  width: 20px; /* Slightly larger than the dot */
+  height: 20px; /* Slightly larger than the dot */
+  /* Ensure it's visible over the dot */
+  z-index: 1; 
+}
+
+.hero-progress-ring circle {
+  stroke-dasharray: 56.55; /* 2 * PI * r (r=9, assuming 1px stroke width) */
+  stroke-dashoffset: 56.55; /* Start fully hidden */
+  stroke-linecap: round;
+  stroke-width: 2; /* Stroke width of the progress ring */
+  stroke: #fff; /* White progress color */
+  fill: transparent;
+  animation: progress-fill 5s linear forwards; /* Match AUTO_PLAY_TIME from JS */
+}
+
+/* Keyframe animation for the progress ring */
+@keyframes progress-fill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Responsive adjustments (optional, but recommended) */
+@media (max-width: 768px) {
+  .hero-dots {
+    bottom: 10px;
+    gap: 8px;
+    padding: 6px 10px;
+  }
+  .hero-dot {
+    width: 8px;
+    height: 8px;
+  }
+  .hero-dot.active {
+    transform: scale(1.15);
+  }
+  .hero-progress-ring {
+    width: 16px;
+    height: 16px;
+  }
+  .hero-progress-ring circle {
+    stroke-width: 1.5px;
+  }
+}

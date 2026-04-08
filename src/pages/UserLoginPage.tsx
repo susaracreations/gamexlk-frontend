@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { auth, db } from '../firebase';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface UserLoginPageProps {
     onToast: (msg: string, type: string) => void;
@@ -15,18 +18,55 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
         document.title = 'Sign In — Gamexlk Store';
     }, []);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
-        // Mock login implementation
-        setTimeout(() => {
-            setLoading(false);
-            localStorage.setItem('userAuth', JSON.stringify({ email }));
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
             window.dispatchEvent(new Event('authUpdated'));
-            onToast('Welcome back! (Demo)', 'success');
+            onToast('Welcome back!', 'success');
             navigate('/');
-        }, 1000);
+        } catch (error: any) {
+            onToast(error.message || 'Login failed', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        setLoading(true);
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider); 
+            const user = result.user;
+
+            // Check if user document exists in Firestore, if not create it
+            const userRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userRef);
+
+            if (!userDoc.exists()) {
+                await setDoc(userRef, {
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    createdAt: new Date().toISOString(),
+                    role: 'user'
+                });
+            }
+
+            localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
+            window.dispatchEvent(new Event('authUpdated'));
+            onToast('Successfully signed in with Google!', 'success');
+            navigate('/');
+        } catch (error: any) {
+            onToast(error.message || 'Google sign-in failed', 'error');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -72,6 +112,23 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
                         disabled={loading}
                     >
                         {loading ? 'Signing in...' : 'Sign In'}
+                    </button>
+
+                    <div style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0' }}>
+                        <div style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></div>
+                        <span style={{ padding: '0 10px', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>OR</span>
+                        <div style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        className="btn btn-outline"
+                        style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '10px', background: 'transparent', border: '1px solid var(--glass-border)', color: 'var(--text-primary)' }}
+                        disabled={loading}
+                    >
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: 18 }} />
+                        Sign in with Google
                     </button>
                 </form>
 

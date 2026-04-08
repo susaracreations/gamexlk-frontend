@@ -12,6 +12,12 @@ const Footer: React.FC = () => {
             Your trusted destination for digital games.
             Experience the next level of gaming with curated collections, instant delivery, and secure payments.
           </p>
+          {/* Optional: Social Media Links */}
+          <div className="social-links">
+            {/* Add your social media icons/links here, e.g.: */}
+            {/* <a href="#" aria-label="Facebook"><i className="fab fa-facebook-f"></i></a> */}
+            {/* <a href="#" aria-label="Twitter"><i className="fab fa-twitter"></i></a> */}
+          </div>
         </div>
 
         {/* Links Column */}
@@ -28,9 +34,9 @@ const Footer: React.FC = () => {
         <div className="footer-col">
           <h4>Support</h4>
           <ul>
-            <Link to="/about">About Us</Link>
-            <li><Link to="/signin">User Sign In</Link></li>
-            <li><Link to="/login">Admin Login</Link></li>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/userlogin">User Sign In</Link></li>
+            <li><Link to="/adminlogin">Admin Login</Link></li>
             <li><a href="mailto:support@gamexlk.com">Contact Support</a></li>
           </ul>
         </div>
@@ -38,12 +44,8 @@ const Footer: React.FC = () => {
         {/* Contact Column */}
         <div className="footer-col">
           <h4>Contact Us</h4>
-          <p style={{ color: '#94a3b8', marginBottom: '0.5rem' }}>
-            Email: support@gamexlk.com
-          </p>
-          <p style={{ color: '#94a3b8' }}>
-            Colombo, Sri Lanka
-          </p>
+          <p className="contact-info">Email: support@gamexlk.com</p>
+          <p className="contact-info">Colombo, Sri Lanka</p>
         </div>
       </div>
 

@@ -9,7 +9,7 @@ import { useToast } from './hooks/useToast';
 
 import HomePage from './pages/HomePage';
 import GameDetailPage from './pages/GameDetailPage';
-import LoginPage from './pages/LoginPage';
+import AdminLoginPage from './pages/AdminLoginPage';
 import UserLoginPage from './pages/UserLoginPage';
 import UserSignUpPage from './pages/UserSignUpPage';
 import UserProfilePage from './pages/UserProfilePage';
@@ -55,7 +55,6 @@ const App: React.FC = () => {
         <Route path="/" element={<HomePage onToast={handleToast} />} />
         <Route path="/products" element={<AllProductsPage onToast={handleToast} />} />
         <Route path="/game/:id" element={<GameDetailPage onToast={handleToast} />} />
-        <Route path="/login" element={<LoginPage onToast={handleToast} />} />
         <Route path="/signin" element={<UserLoginPage onToast={handleToast} />} />
         <Route path="/signup" element={<UserSignUpPage onToast={handleToast} />} />
         <Route path="/profile" element={<UserProfilePage onToast={handleToast} />} />
@@ -64,6 +63,7 @@ const App: React.FC = () => {
         <Route path="/admin" element={<AdminDashboardPage onToast={handleToast} />} />
         <Route path="/checkout" element={<CheckoutPage onToast={handleToast} />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/adminlogin" element={<AdminLoginPage onToast={handleToast} />} />
       </Routes>
 
       <Footer />

@@ -4,6 +4,7 @@ import { Game, GamesResponse, StatsResponse } from '../types';
 import GameCard from '../components/GameCard';
 import HeroCarousel from '../components/HeroCarousel';
 import Breadcrumb from '../components/Breadcrumb';
+import BannerCarousel from '../components/BannerCarousel';
 
 interface HomePageProps {
   onToast: (msg: string, type: string) => void;
@@ -11,6 +12,13 @@ interface HomePageProps {
 
 const GENRES = ['Action', 'Adventure', 'RPG', 'Strategy', 'Sports', 'Racing', 'Fighting', 'Horror', 'Simulation', 'Puzzle', 'FPS', 'MOBA', 'Other'];
 const PLATFORMS = ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X', 'Xbox One', 'Nintendo Switch', 'Mobile', 'Multi-platform'];
+
+const HOMEPAGE_BANNERS = [
+  { id: 'b1', imageUrl: 'https://i.ibb.co/SD49mKhf/5b55be116bb9.webp' },
+  { id: 'b2', imageUrl: 'https://i.ibb.co/JWQS9bhR/6cb6eb335400.webp' },
+  { id: 'b3', imageUrl: 'https://i.ibb.co/23zQNsyg/6d4e9d0b20b2.webp' },
+  { id: 'b4', imageUrl: 'https://i.ibb.co/QFs5NBJ0/5217f9847876.webp' }
+];
 
 const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   const [games, setGames] = useState<Game[]>([]);
@@ -75,6 +83,9 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
 
   return (
     <>
+      {/* Banner Carousel */}
+      <BannerCarousel banners={HOMEPAGE_BANNERS} />
+
       {/* Hero */}
       <section className="hero-section">
         <div className="hero-bg-glow"></div>
