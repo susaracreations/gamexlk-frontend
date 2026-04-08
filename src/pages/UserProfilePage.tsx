@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
+import SubHero from '../components/SubHero';
 
 interface UserProfilePageProps {
     onToast: (msg: string, type: string) => void;
@@ -112,8 +113,16 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
     };
 
     return (
-        <main className="container section" style={{ paddingTop: '100px', minHeight: '80vh' }}>
-            <h1 className="section-title">My Profile</h1>
+        <>
+            <SubHero 
+                title="My Profile"
+                subtitle="Manage your orders, wishlist, and profile settings."
+                breadcrumbItems={[
+                    { label: 'Home', onClick: () => navigate('/') },
+                    { label: 'Account' }
+                ]}
+            />
+            <main className="container section" style={{ minHeight: '80vh' }}>
             {activeTab === 'profile' && (
                 <div className="glass-card" style={{ padding: '2rem', maxWidth: 600, margin: '0 auto' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem' }}>
@@ -212,7 +221,8 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
                 </div>
             )}
         </main>
-    );
+    </>
+  );
 };
 
 export default UserProfilePage;

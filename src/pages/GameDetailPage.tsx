@@ -5,7 +5,7 @@ import { Game } from '../types';
 import { Cart } from '../utils/cart';
 import StarRating from '../components/StarRating';
 import GameCard from '../components/GameCard';
-import Breadcrumb from '../components/Breadcrumb';
+import SubHero from '../components/SubHero';
 // Ensure useState and useEffect are imported from 'react'
 
 interface GameDetailPageProps {
@@ -13,6 +13,131 @@ interface GameDetailPageProps {
 }
 
 const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
+  /* 
+     Integrated CSS Styles 
+     Moving base styles from style.css and implementing utility classes
+     to ensure the page remains self-contained and visually "superb".
+  */
+  const pageStyles = `
+    .game-detail-page {
+      --bg-primary: #050510;
+      --bg-secondary: #0a0a1f;
+      --glass: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --accent-purple: #a855f7;
+      --accent-purple-light: #c084fc;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+      --radius-xl: 28px;
+    }
+
+    /* Core Layout Utilities */
+    .fixed { position: fixed; }
+    .inset-0 { top: 0; left: 0; right: 0; bottom: 0; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .w-full { width: 100%; }
+    .h-screen { height: 100vh; }
+    .-z-10 { z-index: -10; }
+    .bg-cover { background-size: cover; }
+    .bg-center { background-position: center; }
+    .bg-blur-xl { backdrop-filter: blur(80px); -webkit-backdrop-filter: blur(80px); }
+    .opacity-5 { opacity: 0.05; }
+    .saturate-200 { filter: saturate(200%); }
+    
+    .rounded-\[--radius-xl\] { border-radius: var(--radius-xl); }
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .shadow-black\/50 { shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
+    .bg-secondary { background: var(--bg-secondary); }
+    .border-glass { border: 1px solid var(--glass-border); }
+
+    /* Flex & Grid */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .items-end { align-items: flex-end; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-8 { gap: 2rem; }
+    .gap-10 { gap: 2.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-4 > * + * { margin-top: 1rem; }
+    .space-y-6 > * + * { margin-top: 1.5rem; }
+    .space-y-8 > * + * { margin-top: 2rem; }
+    .space-y-12 > * + * { margin-top: 3rem; }
+
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    
+    @media (min-width: 1024px) {
+      .lg\\:grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+      .lg\\:col-span-8 { grid-column: span 8 / span 8; }
+      .lg\\:col-span-4 { grid-column: span 4 / span 4; }
+      .lg\\:sticky { position: sticky; }
+      .lg\\:top-24 { top: 6rem; }
+      .lg\\:pb-32 { padding-bottom: 8rem; }
+    }
+
+    /* Component Styles */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-platform { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple-light); border: 1px solid rgba(168, 85, 247, 0.3); }
+    .badge-genre { background: rgba(6, 182, 212, 0.15); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+    .text-gradient {
+      background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .text-shadow-lg { text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+    .text-4xl { font-size: 2.25rem; }
+    .text-5xl { font-size: 3rem; }
+    .font-black { font-weight: 900; }
+    .font-extrabold { font-weight: 800; }
+    
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f8fafc, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(168, 85, 247, 0.2);
+      border-top-color: var(--accent-purple);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .mobile-top-margin {
+        margin-top: 4rem !important;
+      }
+    }
+  `;
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [game, setGame] = useState<Game | null>(null);
@@ -27,7 +152,7 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
     try {
       const res = await api.get<any>(`/api/wishlist?email=${encodeURIComponent(email)}`);
       if (res.success && Array.isArray(res.wishlist)) {
-        const found = res.wishlist.some((g: any) => String(g.id) === String(id));
+        const found = res.wishlist.some((g: Game) => String(g.id) === String(id));
         setIsInWishlist(found);
       }
     } catch (error) {
@@ -48,14 +173,14 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
     }
 
     api.get<any>(`/api/games/${id}`)
-      .then(data => {
+      .then((data: any) => {
         if (!data.success) throw new Error(data.error || 'Game not found');
         setGame(data.game);
         document.title = `${data.game.title} | GamexLK Store`;
         return api.get<any>(`/api/games?genre=${data.game.genre}`);
       })
-      .then(d => setRelated((d.games || []).filter((g: Game) => g.id !== id).slice(0, 4)))
-      .catch(e => setError(e.message))
+      .then((d: any) => setRelated((d.games || []).filter((g: Game) => g.id !== id).slice(0, 4)))
+      .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id, navigate, checkWishlistStatus]);
 
@@ -92,17 +217,17 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
   };
 
   if (loading) return (
-    <main className="container" style={{ paddingTop: '70px' }}>
-      <div className="loading-state"><div className="spinner" /><p>Loading game...</p></div>
+    <main className="container mx-auto px-4 sm:px-8 lg:px-16 pt-24 min-h-screen">
+      <div className="loading-state flex flex-col items-center justify-center py-20"><div className="spinner" /><p className="mt-4 text-secondary">Loading game...</p></div>
     </main>
   );
 
   if (error || !game) return (
-    <main className="container" style={{ paddingTop: '70px' }}>
-      <div className="empty-state">
-        <div className="icon">😕</div>
-        <h3>Game not found</h3>
-        <p>{error}</p>
+    <main className="container mx-auto px-4 sm:px-8 lg:px-16 pt-24 min-h-screen">
+      <div className="empty-state text-center py-20">
+        <div className="icon text-5xl mb-4">😕</div>
+        <h3 className="text-2xl font-bold mb-2">Game not found</h3>
+        <p className="text-secondary mb-8">{error}</p>
         <a href="/" className="btn btn-primary">Back to Store</a>
       </div>
     </main>
@@ -114,140 +239,220 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
     : game.trailer;
 
   return (
-    <>
-      {/* Ambient Background */}
+    <div className="game-detail-page">
+      <style>{pageStyles}</style>
+      {/* Ambient Background Layer */}
       <div style={{
         position: 'fixed',
-        top: 0, left: 0, width: '100%', height: '80vh',
+        top: 0, left: 0, width: '100%', height: '100vh',
         backgroundImage: `url(${game.image || '/default-game.svg'})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center top',
-        opacity: 0.15,
-        filter: 'blur(60px) saturate(1.2)',
+        backgroundPosition: 'center',
+        opacity: 0.08,
+        filter: 'blur(100px) saturate(2)',
         zIndex: -1,
-        maskImage: 'linear-gradient(to bottom, black, transparent)',
-        WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)'
       }} />
 
-      <main className="container" style={{ paddingTop: '100px', position: 'relative' }}>
-        {/* Breadcrumb */}
-        <Breadcrumb
-          items={[
-            { label: 'Home', icon: '🏠', onClick: () => navigate('/') },
-            { label: 'Store', onClick: () => navigate('/products') },
-            { label: game.title }
-          ]}
-        />
+      <SubHero 
+        title={game.title}
+        subtitle={`${game.platform} • ${game.genre}`}
+        bgImage={game.image}
+        breadcrumbItems={[
+          { label: 'Home', onClick: () => navigate('/') },
+          { label: 'Products', onClick: () => navigate('/products') },
+          { label: game.title }
+        ]}
+      />
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', alignItems: 'flex-start', marginBottom: '4rem' }}>
-          {/* Left Column: Visuals & Content */}
-          <div style={{ flex: '1 1 600px', minWidth: 0 }}>
-            {/* Main Cover */}
-            <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', marginBottom: '2.5rem', background: '#000' }}>
+      <main className="container section mobile-top-margin" style={{ paddingBottom: '6rem' }}>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* Main Visuals Column (8/12) */}
+          <div className="lg:col-span-8 space-y-12">
+            
+            {/* Immersive Cover Image */}
+            <div style={{ 
+              position: 'relative', 
+              borderRadius: 'var(--radius-xl)', 
+              overflow: 'hidden', 
+              boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--glass-border)'
+            }}>
               {game.image ? (
-                <img src={game.image} alt={game.title} style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '500px', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).src = '/default-game.svg'; }} />
+                <img 
+                  src={game.image} 
+                  alt={game.title} 
+                  style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '600px', objectFit: 'cover' }} 
+                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { (e.target as HTMLImageElement).src = '/default-game.svg'; }} 
+                />
               ) : (
-                <div style={{ width: '100%', height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', color: '#333' }}>🎮</div>
+                <div style={{ width: '100%', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem', background: 'var(--gradient-hero)' }}>🎮</div>
               )}
-            </div>
-
-            {/* Description */}
-            <div style={{ marginBottom: '2.5rem' }}>
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem' }}>About This Game</h2>
-              <div style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '1rem', whiteSpace: 'pre-line' }}>
-                {game.description || 'No description available for this game.'}
-              </div>
-            </div>
-
-            {/* Trailer */}
-            {game.trailer && (
-              <div style={{ marginBottom: '2.5rem' }}>
-                <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Trailer</h3>
-                <div className="video-wrap" style={{ boxShadow: '0 10px 30px rgba(0,0,0,0.3)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
-                  <iframe src={trailerSrc} frameBorder="0" allowFullScreen style={{ width: '100%', height: '100%', aspectRatio: '16/9' }} title="Game Trailer" />
+              
+              {/* Image Footer/Overlay Info */}
+              <div style={{
+                position: 'absolute',
+                bottom: 0, left: 0, right: 0,
+                padding: '2rem',
+                background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end'
+              }}>
+                <div>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                    <span className="badge badge-platform">{game.platform}</span>
+                    <span className="badge badge-genre">{game.genre}</span>
+                  </div>
+                  <h1 style={{ fontSize: '2.5rem', fontWeight: 900, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>{game.title}</h1>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <StarRating rating={game.rating} />
+                  <div style={{ fontSize: '0.9rem', opacity: 0.8, marginTop: '4px' }}>{parseFloat(String(game.rating)).toFixed(1)} / 5.0</div>
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* System Req */}
-            <div style={{ padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)' }}>
-              <h3 style={{ marginBottom: '1.5rem', fontSize: '1.1rem', color: 'var(--text-primary)' }}>System Requirements</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                <div><strong style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>OS</strong> Windows 10 64-bit</div>
-                <div><strong style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>Processor</strong> Intel Core i5 / AMD Equivalent</div>
-                <div><strong style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>Memory</strong> 8 GB RAM</div>
-                <div><strong style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>Graphics</strong> NVIDIA GTX 1060 / AMD RX 580</div>
+            {/* Content Tabs/Sections */}
+            <div className="glass-card" style={{ padding: '2.5rem', borderRadius: 'var(--radius-xl)' }}>
+              <div style={{ borderBottom: '1px solid var(--glass-border)', marginBottom: '2rem', paddingBottom: '1rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-purple-light)' }}>Detailed Information</h2>
+              </div>
+              
+              <div className="space-y-8">
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'white' }}>Description</h3>
+                  <div style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '1.05rem', whiteSpace: 'pre-line' }}>
+                    {game.description || 'No description available for this game.'}
+                  </div>
+                </div>
+
+                {game.trailer && (
+                  <div>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', color: 'white' }}>Watch Trailer</h3>
+                    <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: '0 15px 35px rgba(0,0,0,0.4)', background: 'black' }}>
+                      <iframe 
+                        src={trailerSrc} 
+                        frameBorder="0" 
+                        allowFullScreen 
+                        style={{ width: '100%', aspectRatio: '16/9' }} 
+                        title="Game Trailer" 
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Right Column: Sidebar */}
-          <div style={{ flex: '1 1 300px', position: 'sticky', top: '90px' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-              <span className="badge" style={{ background: 'var(--primary-color)', color: 'white', padding: '0.25rem 0.75rem' }}>{game.platform}</span>
-              <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', padding: '0.25rem 0.75rem' }}>{game.genre}</span>
-            </div>
-
-            <h1 style={{ fontSize: '2.5rem', lineHeight: '1.1', marginBottom: '0.5rem' }}>{game.title}</h1>
-
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem', fontSize: '0.9rem' }}>
-              <StarRating rating={game.rating} />
-              <span style={{ marginLeft: '0.5rem', color: 'var(--text-secondary)' }}>({parseFloat(String(game.rating)).toFixed(1)})</span>
-            </div>
-
+          {/* Sidebar Actions Column (4/12) */}
+          <aside className="lg:col-span-4 space-y-6">
+            
             {/* Purchase Card */}
-            <div style={{ padding: '1.5rem', borderRadius: 'var(--radius-lg)', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', marginBottom: '2rem' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.25rem', color: 'var(--text-primary)' }}>
-                {price === 0 ? 'Free' : `LKR ${price.toFixed(2)}`}
+            <div className="glass-card" style={{ 
+              padding: '2rem', 
+              borderRadius: 'var(--radius-xl)', 
+              background: 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+              position: 'sticky',
+              top: '100px'
+            }}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h4 style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Full Game</h4>
+                <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)' }}>
+                  {price === 0 ? <span className="text-gradient">FREE</span> : `LKR ${price.toLocaleString()}`}
+                </div>
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>One-time purchase</div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button className="btn btn-primary" style={{ flex: 1, justifyContent: 'center', height: '50px', fontSize: '1rem' }} onClick={() => Cart.add(game, onToast)}>
-                  Add to Cart
+              <div className="space-y-3">
+                <button 
+                  className="btn btn-primary btn-lg" 
+                  style={{ width: '100%', justifyContent: 'center', height: '56px', fontSize: '1.1rem' }} 
+                  onClick={() => Cart.add(game, onToast)}
+                >
+                  🛒 Add to Cart
                 </button>
                 <button 
-                  className={`btn ${isInWishlist ? 'btn-danger' : 'btn-secondary'}`}
+                  className={`btn btn-lg ${isInWishlist ? 'btn-danger' : 'btn-secondary'}`}
                   onClick={toggleWishlist}
-                  style={{ flex: 1, justifyContent: 'center', height: '50px', fontSize: '0.9rem' }}
+                  style={{ width: '100%', justifyContent: 'center', height: '56px' }}
                 >
                   {isInWishlist ? '❤️ In Wishlist' : '🤍 Add to Wishlist'}
                 </button>
               </div>
+
+              <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--glass-border)' }}>
+                <div className="space-y-4">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Publisher</span>
+                    <span style={{ fontWeight: 600 }}>{game.publisher}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Release</span>
+                    <span style={{ fontWeight: 600 }}>{new Date(game.releaseDate).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {game.tags && game.tags.length > 0 && (
+                <div style={{ marginTop: '2rem' }}>
+                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase' }}>Tags</div>
+                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {game.tags.map(t => (
+                      <span key={t} style={{ 
+                        fontSize: '0.7rem', 
+                        padding: '4px 10px', 
+                        background: 'rgba(255,255,255,0.05)', 
+                        borderRadius: '100px', 
+                        color: 'var(--text-secondary)',
+                        border: '1px solid rgba(255,255,255,0.05)'
+                      }}>
+                        {t.trim()}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Instant Delivery Notice (Moved Inside Card) */}
+              <div style={{ 
+                marginTop: '2rem', 
+                paddingTop: '1.5rem', 
+                borderTop: '1px solid rgba(255,255,255,0.05)',
+                textAlign: 'center', 
+                opacity: 0.5, 
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
+                fontWeight: 500
+              }}>
+                ✓ Instant digital delivery after purchase.
+              </div>
             </div>
 
-            {/* Details List */}
-            <div style={{ fontSize: '0.9rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Publisher</span>
-                <span style={{ fontWeight: 500 }}>{game.publisher}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Release Date</span>
-                <span style={{ fontWeight: 500 }}>{new Date(game.releaseDate).toLocaleDateString()}</span>
-              </div>
-            </div>
-
-            {/* Tags */}
-            {game.tags && game.tags.length > 0 && (
-              <div style={{ marginTop: '2rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {game.tags.map(t => <span key={t} style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', color: 'var(--text-secondary)' }}>#{t.trim()}</span>)}
-              </div>
-            )}
-          </div>
+          </aside>
         </div>
 
-        {/* Related */}
-        <div style={{ marginBottom: '6rem' }}>
-          <h2 className="section-title" style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '3rem' }}>You May Also Like</h2>
+        {/* Related Games Footer Section */}
+        <section style={{ marginTop: '6rem', paddingTop: '4rem', borderTop: '1px solid var(--glass-border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
+            <div>
+              <h2 className="section-title" style={{ marginBottom: '0.5rem' }}>You May Also Like</h2>
+              <p style={{ color: 'var(--text-muted)' }}>Discover more {game.genre} games picked for you</p>
+            </div>
+            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/products')}>View More</button>
+          </div>
+          
           <div className="games-grid">
             {related.length === 0
-              ? <p style={{ color: 'var(--text-muted)', gridColumn: '1/-1' }}>No related games found.</p>
+              ? <div className="empty-state" style={{ gridColumn: '1/-1' }}>No related games found.</div>
               : related.map(g => <GameCard key={g.id} game={g} onToast={onToast} />)}
           </div>
-        </div>
+        </section>
       </main>
-    </>
+    </div>
   );
 };
 

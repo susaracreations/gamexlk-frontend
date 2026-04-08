@@ -4,6 +4,8 @@ import { Cart } from '../utils/cart';
 import { api } from '../utils/api';
 import { CartItem } from '../types';
 
+import SubHero from '../components/SubHero';
+
 interface CheckoutPageProps {
   onToast: (msg: string, type: string) => void;
 }
@@ -132,17 +134,26 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
   };
 
   return (
-    <main className="container section" style={{ paddingTop: '100px', minHeight: '90vh' }}>
-      {items.length === 0 ? (
-        <div className="empty-state glass-card">
-          <div className="icon">🛒</div>
-          <h3>Your Cart is Empty</h3>
-          <p>Looks like you haven't added any games yet.</p>
-          <button className="btn btn-primary" onClick={() => navigate('/')}>Browse Store</button>
-        </div>
-      ) : (
-        <>
-          <h1 className="section-title">Checkout</h1>
+    <>
+      <SubHero 
+        title="Checkout"
+        subtitle="Complete your purchase and start gaming. We offer instant delivery for almost all products."
+        breadcrumbItems={[
+          { label: 'Home', onClick: () => navigate('/') },
+          { label: 'Checkout' }
+        ]}
+      />
+      <main className="container section" style={{ paddingTop: '50px', minHeight: '80vh' }}>
+        {items.length === 0 ? (
+          <div className="empty-state glass-card">
+            <div className="icon">🛒</div>
+            <h3>Your Cart is Empty</h3>
+            <p>Looks like you haven't added any games yet.</p>
+            <button className="btn btn-primary" onClick={() => navigate('/')}>Browse Store</button>
+          </div>
+        ) : (
+          <>
+
 
           <div className="checkout-grid">
             {/* Cart Items */}
@@ -238,6 +249,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
         </>
       )}
     </main>
+  </>
   );
 };
 

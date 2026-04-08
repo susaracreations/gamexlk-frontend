@@ -200,9 +200,8 @@ a {
 
 .navbar-inner {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -952,12 +951,24 @@ textarea.form-control {
 /* ════════════════════════════════
    SECTION & LAYOUT
 ════════════════════════════════ */
+/* --- Global Container Rule --- */
 .container {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px; /* Mobile Side Padding */
+  padding-right: 20px;
   position: relative;
   z-index: 1;
+}
+
+/* Desktop Switch */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1200px; /* Centered Desktop Width */
+    padding-left: 0;   /* Clean edges on Desktop */
+    padding-right: 0;
+  }
 }
 
 .section {
@@ -1044,7 +1055,7 @@ textarea.form-control {
   background: #0f0f16;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 4rem;
-  margin-top: auto;
+  margin-top: 4rem;
 }
 
 .footer-grid {

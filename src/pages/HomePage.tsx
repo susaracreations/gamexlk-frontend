@@ -3,7 +3,7 @@ import { api, debounce } from '../utils/api';
 import { Game, GamesResponse, StatsResponse } from '../types';
 import GameCard from '../components/GameCard';
 import HeroCarousel from '../components/HeroCarousel';
-import Breadcrumb from '../components/Breadcrumb';
+import SubHero from '../components/SubHero';
 import BannerCarousel from '../components/BannerCarousel';
 
 interface HomePageProps {
@@ -121,14 +121,17 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
       </section>
 
       {/* Games Grid */}
-      <main className="container section" id="store">
-        <h2 className="section-title">Our Products</h2>
-        <Breadcrumb
-          items={[
-            { label: 'Home', icon: '🏠', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
+      <section id="store">
+        <SubHero 
+          title="Our Store"
+          subtitle="Discover curated collections and unbeatable prices."
+          breadcrumbItems={[
+            { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
             { label: 'Store' }
           ]}
         />
+      </section>
+      <main className="container section">
         <div className="glass-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
           <div className="filters-inner">
             <div className="search-bar">

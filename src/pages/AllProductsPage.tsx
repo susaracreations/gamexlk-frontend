@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { api, debounce } from '../utils/api';
 import { Game, GamesResponse } from '../types';
 import GameCard from '../components/GameCard';
-import Breadcrumb from '../components/Breadcrumb';
+import SubHero from '../components/SubHero';
 
 interface AllProductsPageProps {
     onToast: (msg: string, type: string) => void;
@@ -67,17 +67,17 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
     };
 
     return (
-        <main className="container section" style={{ paddingTop: '100px', minHeight: '90vh' }}>
-            <h1 className="section-title">All Products</h1>
-
-            <Breadcrumb
-                items={[
-                    { label: 'Home', icon: '🏠', onClick: () => navigate('/') },
+        <>
+            <SubHero 
+                title="All Products"
+                subtitle="Explore our vast collection of digital games and software from top publishers."
+                breadcrumbItems={[
+                    { label: 'Home', onClick: () => navigate('/') },
                     { label: 'All Products' }
                 ]}
             />
-
-            <div className="glass-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
+            <main className="container section" style={{ minHeight: '90vh' }}>
+                <div className="glass-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
                 <div className="filters-inner">
                     <div className="search-bar">
                         <span className="search-icon">🔍</span>
@@ -127,7 +127,8 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
                 )}
             </div>
         </main>
-    );
+    </>
+  );
 };
 
 export default AllProductsPage;

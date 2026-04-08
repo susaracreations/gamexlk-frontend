@@ -1,6 +1,7 @@
 // User Registration Page
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import SubHero from '../components/SubHero';
 
 interface UserSignUpPageProps {
     onToast: (msg: string, type: string) => void;
@@ -48,12 +49,20 @@ const UserSignUpPage: React.FC<UserSignUpPageProps> = ({ onToast }) => {
     };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '85vh', paddingTop: '40px', paddingBottom: '40px' }}>
-            <div className="login-card">
-                <div className="login-header">
-                    <h1 className="section-title" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Create Account</h1>
-                    <p style={{ color: 'var(--text-secondary)' }}>Join Gamexlk today</p>
-                </div>
+        <>
+            <SubHero 
+                title="Join Gamexlk"
+                subtitle="Create your account to unlock exclusive member features, track orders, and join our gaming community."
+                breadcrumbItems={[
+                    { label: 'Home', onClick: () => navigate('/') },
+                    { label: 'Sign Up' }
+                ]}
+            />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', paddingBottom: '80px', marginTop: '40px' }}>
+                <div className="login-card">
+                    <div className="login-header">
+                        <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center' }}>Enter your details to create an account</p>
+                    </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group" style={{ marginBottom: '1.25rem' }}>
@@ -90,6 +99,7 @@ const UserSignUpPage: React.FC<UserSignUpPageProps> = ({ onToast }) => {
                 </div>
             </div>
         </div>
+    </>
     );
 };
 

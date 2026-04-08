@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Breadcrumb from '../components/Breadcrumb';
+import SubHero from '../components/SubHero';
 
 const AboutPage: React.FC = () => {
     const navigate = useNavigate();
@@ -10,22 +10,17 @@ const AboutPage: React.FC = () => {
     }, []);
 
     return (
-        <main className="container" style={{ paddingTop: '100px', paddingBottom: '4rem' }}>
-            <Breadcrumb
-                items={[
-                    { label: 'Home', icon: '🏠', onClick: () => navigate('/') },
+        <>
+            <SubHero 
+                title="About GamexLK"
+                subtitle="Your ultimate destination for digital games, software, and gift cards in Sri Lanka. We are dedicated to providing the best gaming experience with instant delivery."
+                breadcrumbItems={[
+                    { label: 'Home', onClick: () => navigate('/') },
                     { label: 'About Us' }
                 ]}
             />
-
-            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                    <h1 style={{ fontSize: '3rem', marginBottom: '1.5rem', background: 'linear-gradient(to right, #fff, #aaa)', backgroundClip: 'text', WebkitBackgroundClip: 'text', color: 'transparent', WebkitTextFillColor: 'transparent' }}>About Gamexlk Store</h1>
-                    <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '600px', margin: '0 auto' }}>
-                        Your ultimate destination for digital games, software, and gift cards in Sri Lanka.
-                        We are dedicated to providing the best gaming experience with instant delivery.
-                    </p>
-                </div>
+            <main className="container" style={{ paddingBottom: '4rem' }}>
+                <div style={{ maxWidth: '800px', margin: '4rem auto 0' }}>
 
                 {/* Features Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem', marginBottom: '5rem' }}>
@@ -80,7 +75,8 @@ const AboutPage: React.FC = () => {
                 </div>
             </div>
         </main>
-    );
+    </>
+  );
 };
 
 export default AboutPage;

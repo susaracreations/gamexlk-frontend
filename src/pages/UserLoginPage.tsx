@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import SubHero from '../components/SubHero';
 
 interface UserLoginPageProps {
     onToast: (msg: string, type: string) => void;
@@ -70,41 +71,48 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
     };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '85vh', paddingTop: '40px' }}>
-            <div className="login-card">
-                <div className="login-header">
-                    <div className="login-icon" style={{ background: 'var(--bg-card)', width: 80, height: 80, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '2.5rem', border: '1px solid var(--glass-border)' }}>👤</div>
-                    <h1 className="section-title" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Welcome Back</h1>
-                    <p style={{ color: 'var(--text-secondary)' }}>Sign in to access your library</p>
-                </div>
+        <>
+            <SubHero 
+                title="Welcome Back"
+                subtitle="Sign in to your account to access your digital library, track orders, and manage your profile."
+                breadcrumbItems={[
+                    { label: 'Home', onClick: () => navigate('/') },
+                    { label: 'Sign In' }
+                ]}
+            />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', paddingBottom: '80px', marginTop: '40px' }}>
+                <div className="login-card">
+                    <div className="login-header">
+                        <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center' }}>Sign in to access your library</p>
+                    </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                        <label className="form-label">Email Address</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            placeholder="name@example.com"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <label className="form-label">Password</label>
-                            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                            <a href="#" onClick={e => e.preventDefault()} style={{ fontSize: '0.8rem', color: 'var(--accent-purple)', textDecoration: 'none' }}>Forgot password?</a>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                            <label className="form-label">Email Address</label>
+                            <input
+                                type="email"
+                                className="form-control"
+                                placeholder="name@example.com"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                required
+                            />
                         </div>
-                        <input
-                            type="password"
-                            className="form-control"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+                        <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <label className="form-label">Password</label>
+                                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                                <a href="#" onClick={e => e.preventDefault()} style={{ fontSize: '0.8rem', color: 'var(--accent-purple)', textDecoration: 'none' }}>Forgot password?</a>
+                            </div>
+                            <input
+                                type="password"
+                                className="form-control"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
                     <button
                         type="submit"
                         className="btn btn-primary btn-lg"
@@ -139,6 +147,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
                 </div>
             </div>
         </div>
+    </>
     );
 };
 
