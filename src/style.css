@@ -69,8 +69,8 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
-  padding-top: calc(var(--notice-height, var(--notice-bar-default-height)) + var(--navbar-default-height) + 2px);
-  /* Accommodate fixed navbar */
+  padding-top: calc(var(--notice-height, var(--notice-bar-default-height)) + var(--navbar-height, var(--navbar-default-height)));
+  /* Accommodate fixed navbar and notice bar */
 }
 
 body::before {
@@ -122,34 +122,11 @@ a {
   background: var(--accent-purple);
 }
 
-/* ════════════════════════════════
-   NAVBAR
-════════════════════════════════ */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 72px;
-  z-index: 1000;
-  top: 0;
-  background: rgba(5, 5, 16, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
-.navbar.scrolled {
-  background: rgba(5, 5, 16, 0.98);
-  height: 64px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
 
 .notice-bar {
   position: fixed;
-  top: var(--navbar-default-height);
+  top: var(--navbar-height, var(--navbar-default-height));
   left: 0;
   width: 100%;
   min-height: var(--notice-bar-default-height); /* Use min-height to allow content to wrap */
@@ -198,178 +175,9 @@ a {
   opacity: 0.7;
 }
 
-.navbar-inner {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-}
 
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
-  text-decoration: none;
-  letter-spacing: -0.5px;
-}
 
-.logo-img {
-  height: 28px; /* Default logo height */
-  width: auto;
-  transition: transform var(--transition);
-}
 
-.highlight {
-  color: var(--accent-purple);
-}
-
-.nav-links {
-  display: flex;
-  gap: 2.5rem;
-  align-items: center;
-  list-style: none;
-}
-
-.nav-links a {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-  position: relative;
-}
-
-.nav-links a:hover,
-.nav-links a.active {
-  color: white;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%) scale(0);
-  width: 4px;
-  height: 4px;
-  background: var(--accent-purple);
-  border-radius: 50%;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  opacity: 0;
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after {
-  transform: translateX(-50%) scale(1);
-  opacity: 1;
-}
-
-.btn-nav {
-  padding: 0.5rem 1.25rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  color: white !important;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-nav:hover {
-  background: var(--accent-purple);
-  border-color: var(--accent-purple);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
-}
-
-.btn-logout {
-  background: transparent !important;
-  border: none;
-  color: var(--text-secondary) !important;
-  font-size: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s;
-  padding: 0.5rem;
-  cursor: pointer;
-  box-shadow: none !important;
-}
-
-.btn-logout:hover {
-  color: #ef4444 !important;
-  transform: none;
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.cart-btn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: color 0.2s ease;
-  font-size: 1.25rem;
-}
-
-.cart-btn:hover {
-  color: white;
-  transform: none;
-  background: transparent;
-  border-color: transparent;
-}
-
-.cart-count {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: var(--accent-purple);
-  color: white;
-  font-size: 0.6rem;
-  font-weight: 700;
-  min-width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 2px solid var(--bg-primary);
-}
-
-.mobile-toggle {
-  display: none;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.mobile-only {
-  display: none;
-}
 
 /* ════════════════════════════════
    BUTTONS
@@ -999,41 +807,6 @@ textarea.form-control {
    RESPONSIVE
 ════════════════════════════════ */
 @media (max-width: 768px) {
-  .mobile-toggle {
-    display: block;
-  }
-
-  .nav-links {
-    position: fixed;
-    top: 72px;
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 72px);
-    background: rgba(5, 5, 16, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    flex-direction: column;
-    justify-content: center;
-    gap: 2rem;
-    transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    display: flex;
-  }
-
-  .nav-links.active {
-    transform: translateX(0);
-  }
-
-  .navbar.scrolled .nav-links {
-    top: 64px;
-    height: calc(100vh - 64px);
-  }
-
-  .mobile-only {
-    display: block;
-  }
-
   .games-grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
@@ -1971,17 +1744,14 @@ textarea.form-control {
   }
 
   body {
-    /* Recalculate padding-top based on new mobile heights */
-    padding-top: calc(var(--notice-height, var(--notice-bar-default-height)) + var(--navbar-default-height) + 2px);
+    /* Recalculate padding-top based on dynamic heights */
+    padding-top: calc(var(--notice-height, var(--notice-bar-default-height)) + var(--navbar-height, var(--navbar-default-height)));
   }
 
-  .navbar {
-    height: var(--navbar-default-height); /* Navbar height is 64px on mobile */
-    top: 0;
-  }
+
 
   .notice-bar {
-    top: var(--navbar-default-height);
+    top: var(--navbar-height, var(--navbar-default-height));
     font-size: 0.75rem; /* Smaller font size for mobile notice */
     padding: 6px 0; /* Adjust vertical padding */
   }

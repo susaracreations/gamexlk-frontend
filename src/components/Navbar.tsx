@@ -24,13 +24,26 @@ const Navbar: React.FC = () => {
     window.addEventListener('cartUpdated', update);
     window.addEventListener('authUpdated', updateAuth);
 
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 20;
+      setScrolled(isScrolled);
+      
+      const isMobile = window.innerWidth <= 900;
+      const height = (isMobile || isScrolled) ? '64px' : '72px';
+      document.documentElement.style.setProperty('--navbar-height', height);
+    };
+    
+    // Set initial height
+    handleScroll();
+    
     window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
 
     return () => {
       window.removeEventListener('cartUpdated', update);
       window.removeEventListener('authUpdated', updateAuth);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
   }, []);
 
@@ -39,7 +52,202 @@ const Navbar: React.FC = () => {
   }, [location]);
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+    <>
+      <style>{`
+        .navbar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 72px;
+          z-index: 1000;
+          background: rgba(5, 5, 16, 0.7);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar.scrolled {
+          background: rgba(5, 5, 16, 0.98);
+          height: 64px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-inner {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 100%;
+        }
+
+        .nav-logo {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: white;
+          text-decoration: none;
+          letter-spacing: -0.5px;
+        }
+
+        .logo-img {
+          height: 28px;
+          width: auto;
+          transition: transform var(--transition);
+        }
+
+        .highlight {
+          color: var(--accent-purple);
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 2.5rem;
+          align-items: center;
+          list-style: none;
+        }
+
+        .nav-links a {
+          color: var(--text-secondary);
+          text-decoration: none;
+          font-size: 0.9rem;
+          font-weight: 500;
+          transition: color 0.2s ease;
+          position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+          color: white;
+        }
+
+        .nav-links a::after {
+          content: '';
+          position: absolute;
+          bottom: -6px;
+          left: 50%;
+          transform: translateX(-50%) scale(0);
+          width: 4px;
+          height: 4px;
+          background: var(--accent-purple);
+          border-radius: 50%;
+          transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          opacity: 0;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+          transform: translateX(-50%) scale(1);
+          opacity: 1;
+        }
+
+        .nav-actions {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .cart-btn {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.5rem;
+          background: transparent;
+          border: none;
+          color: var(--text-secondary);
+          cursor: pointer;
+          transition: color 0.2s ease;
+          font-size: 1.25rem;
+        }
+
+        .cart-btn:hover {
+          color: white;
+        }
+
+        .cart-count {
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: var(--accent-purple);
+          color: white;
+          font-size: 0.6rem;
+          font-weight: 700;
+          min-width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: 2px solid var(--bg-primary);
+        }
+
+        .mobile-toggle {
+          display: none;
+          background: transparent;
+          border: none;
+          color: var(--text-primary);
+          font-size: 1.5rem;
+          cursor: pointer;
+        }
+
+        .mobile-only {
+          display: none;
+        }
+
+        @media (max-width: 900px) {
+          .navbar {
+            height: var(--navbar-height, var(--navbar-default-height));
+            top: 0;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .mobile-toggle {
+            display: block;
+          }
+
+          .nav-links {
+            position: fixed;
+            top: var(--navbar-height, 72px);
+            left: 0;
+            width: 100%;
+            height: calc(100vh - var(--navbar-height, 72px));
+            background: rgba(5, 5, 16, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            flex-direction: column;
+            justify-content: center;
+            gap: 2rem;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+          }
+
+          .nav-links.active {
+            transform: translateX(0);
+          }
+
+          .navbar.scrolled .nav-links {
+            top: 64px;
+            height: calc(100vh - 64px);
+          }
+
+          .mobile-only {
+            display: block;
+          }
+        }
+      `}</style>
+      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container navbar-inner">
         {/* Logo */}
         <Link to="/" className="nav-logo">
@@ -56,7 +264,6 @@ const Navbar: React.FC = () => {
           <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
           <Link to="/products" className={location.pathname === '/products' ? 'active' : ''}>Products</Link>
           <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About</Link>
-          <Link to="/checkout" className="mobile-only">Cart ({cartCount})</Link>
         </div>
 
         {/* Desktop Actions */}
@@ -93,6 +300,7 @@ const Navbar: React.FC = () => {
         </div>
       </div>
     </nav>
+    </>
   );
 };
 

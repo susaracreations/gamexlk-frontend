@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { api, debounce } from '../utils/api';
 import { Game, GamesResponse, StatsResponse } from '../types';
 import GameCard from '../components/GameCard';
-import HeroCarousel from '../components/HeroCarousel';
 import SubHero from '../components/SubHero';
 import BannerCarousel from '../components/BannerCarousel';
 
@@ -22,7 +21,6 @@ const HOMEPAGE_BANNERS = [
 
 const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   const [games, setGames] = useState<Game[]>([]);
-  const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
   const [error, setError] = useState('');
   const [total, setTotal] = useState(0);
   const [stats, setStats] = useState<{ total: number; genres: number; platforms: number } | null>(null);
@@ -52,7 +50,6 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   useEffect(() => {
     document.title = 'GamexLK Store';
     loadGames(search, genre, platform, sort);
-    api.get<GamesResponse>('/api/games?sort=rating').then(d => setFeaturedGames((d.games || []).slice(0, 5))).catch(() => { });
     api.get<StatsResponse>('/api/stats').then(d => {
       if (d.success) setStats({ total: d.total, genres: d.genres.length, platforms: d.platforms.length });
     }).catch(() => { });
@@ -81,44 +78,6 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
     <>
       {/* Banner Carousel */}
       <BannerCarousel banners={HOMEPAGE_BANNERS} />
-
-      {/* Hero */}
-      <section className="hero-section">
-        <div className="hero-bg-glow"></div>
-        <div className="container">
-          <div className="hero-grid">
-            <div className="hero-content">
-              <h1 className="hero-headline">
-                Your Next Adventure <br />
-                <span className="text-gradient">Starts Here</span>
-              </h1>
-              <p className="hero-subtext">
-                The ultimate destination for digital games. Discover curated collections, unbeatable prices, and instant delivery across all platforms.
-              </p>
-              <div className="hero-cta">
-                <a href="#store" className="btn btn-primary btn-lg glow-on-hover">
-                  Browse Collection
-                </a>
-              </div>
-              {stats && (
-                <div className="hero-stats-row">
-                  <div className="stat-item">
-                    <strong>{stats.total}+</strong> <span>Games</span>
-                  </div>
-                  <div className="stat-divider"></div>
-                  <div className="stat-item">
-                    <strong>{stats.platforms}</strong> <span>Platforms</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="hero-visual">
-              <HeroCarousel games={featuredGames} onToast={onToast} />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Games Grid */}
       <section id="store">
