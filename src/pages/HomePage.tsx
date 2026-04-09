@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api, debounce } from '../utils/api';
-import { Game, GamesResponse, StatsResponse } from '../types';
+import { Game, GamesResponse } from '../types';
 import GameCard from '../components/GameCard';
 import SubHero from '../components/SubHero';
 import BannerCarousel from '../components/BannerCarousel';
@@ -23,7 +23,6 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   const [games, setGames] = useState<Game[]>([]);
   const [error, setError] = useState('');
   const [total, setTotal] = useState(0);
-  const [stats, setStats] = useState<{ total: number; genres: number; platforms: number } | null>(null);
 
   const [search, setSearch] = useState('');
   const [genre, setGenre] = useState('all');
@@ -50,9 +49,6 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   useEffect(() => {
     document.title = 'GamexLK Store';
     loadGames(search, genre, platform, sort);
-    api.get<StatsResponse>('/api/stats').then(d => {
-      if (d.success) setStats({ total: d.total, genres: d.genres.length, platforms: d.platforms.length });
-    }).catch(() => { });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
