@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api, debounce } from '../utils/api';
 import { Game, GamesResponse } from '../types';
 import GameCard from '../components/GameCard';
 import SubHero from '../components/SubHero';
 import BannerCarousel from '../components/BannerCarousel';
+import PlatformAnimationContainer from '../components/PlatformAnimationContainer';
 
 interface HomePageProps {
   onToast: (msg: string, type: string) => void;
@@ -20,14 +22,10 @@ const HOMEPAGE_BANNERS = [
 ];
 
 const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
+  const navigate = useNavigate();
   const [games, setGames] = useState<Game[]>([]);
   const [error, setError] = useState('');
   const [total, setTotal] = useState(0);
-
-  const [search, setSearch] = useState('');
-  const [genre, setGenre] = useState('all');
-  const [platform, setPlatform] = useState('all');
-  const [sort, setSort] = useState('newest');
 
   const isLoggedIn = !!localStorage.getItem('authToken');
 
@@ -43,42 +41,24 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
     }
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedLoad = useCallback(debounce((val: string) => loadGames(val, genre, platform, sort), 350), [loadGames, genre, platform, sort]);
-
   useEffect(() => {
     document.title = 'GamexLK Store';
-    loadGames(search, genre, platform, sort);
+    loadGames('', 'all', 'all', 'newest');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    debouncedLoad(e.target.value);
-  };
-
-  const handleGenre = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setGenre(e.target.value);
-    loadGames(search, e.target.value, platform, sort);
-  };
-  const handlePlatform = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPlatform(e.target.value);
-    loadGames(search, genre, e.target.value, sort);
-  };
-  const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSort(e.target.value);
-    loadGames(search, genre, platform, e.target.value);
-  };
 
   return (
     <>
       {/* Banner Carousel */}
       <BannerCarousel banners={HOMEPAGE_BANNERS} />
 
+      {/* Platforms Animation */}
+      <PlatformAnimationContainer />
+
       {/* Games Grid */}
       <section id="store">
         <SubHero 
-          title="Our Store"
+          title="Latest Products"
           subtitle="Discover curated collections and unbeatable prices."
           breadcrumbItems={[
             { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
@@ -86,32 +66,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
           ]}
         />
       </section>
-      <main className="container section">
-        <div className="glass-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
-          <div className="filters-inner">
-            <div className="search-bar">
-              <span className="search-icon">🔍</span>
-              <input type="text" value={search} onChange={handleSearch} placeholder="Search games, publishers..." autoComplete="off" />
-            </div>
-            <select className="filter-select" value={genre} onChange={handleGenre}>
-              <option value="all">All Genres</option>
-              {GENRES.map(g => <option key={g}>{g}</option>)}
-            </select>
-            <select className="filter-select" value={platform} onChange={handlePlatform}>
-              <option value="all">All Platforms</option>
-              {PLATFORMS.map(p => <option key={p}>{p}</option>)}
-            </select>
-            <select className="filter-select" value={sort} onChange={handleSort}>
-              <option value="newest">Newest</option>
-              <option value="rating">Top Rated</option>
-              <option value="price-asc">Price ↑</option>
-              <option value="price-desc">Price ↓</option>
-            </select>
-            <span className="filter-count">
-              {games.length === total ? `${total} game${total !== 1 ? 's' : ''}` : `${games.length} of ${total} games`}
-            </span>
-          </div>
-        </div>
+      <main className="container section" style={{ paddingBottom: '4rem' }}>
         <div className="games-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
@@ -122,7 +77,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
               <div className="icon">⚠️</div>
               <h3>Something went wrong</h3>
               <p>{error}</p>
-              <button className="btn btn-primary" onClick={() => loadGames(search, genre, platform, sort)}>Try Again</button>
+              <button className="btn btn-primary" onClick={() => loadGames('', 'all', 'all', 'newest')}>Try Again</button>
             </div>
           ) : games.length === 0 ? (
             <div className="empty-state" style={{ gridColumn: '1/-1' }}>
@@ -131,9 +86,37 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
               <p>Try adjusting your search or filters{isLoggedIn ? ', or ' : '.'}{isLoggedIn && <a href="/add-game" style={{ color: 'var(--accent-purple)' }}>add a new game</a>}</p>
             </div>
           ) : (
-            games.map((g) => <GameCard key={g.id} game={g} onToast={onToast} />)
+            games.slice(0, 8).map((g) => <GameCard key={g.id} game={g} onToast={onToast} />)
           )}
         </div>
+        
+        {games.length > 8 && (
+          <div style={{ marginTop: '3rem', display: 'flex', justifyContent: 'center' }}>
+            <button 
+              className="btn btn-primary" 
+              onClick={() => navigate('/products')}
+              style={{
+                padding: '1rem 2.5rem',
+                fontSize: '1.1rem',
+                borderRadius: '50px',
+                background: 'linear-gradient(135deg, var(--accent-purple), var(--accent-blue))',
+                border: 'none',
+                boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.3)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
+              }}
+            >
+              View All Products
+            </button>
+          </div>
+        )}
       </main>
     </>
   );

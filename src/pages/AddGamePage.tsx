@@ -75,7 +75,7 @@ const AddGamePage: React.FC<AddGamePageProps> = ({ onToast }) => {
 
       if (data.success) {
         onToast(data.message || 'Game saved!', 'success');
-        setTimeout(() => navigate(`/game/${data.game.id}`), 1200);
+        setTimeout(() => navigate(`/product/${data.game.slug || data.game.id}`), 1200);
       } else throw new Error(data.error || 'Failed to save game');
     } catch (err: any) {
       onToast(err.message, 'error');

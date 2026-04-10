@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Game } from '../types';
 import { Cart } from '../utils/cart';
+import { toSlug } from '../utils/api';
 import StarRating from './StarRating';
 
 interface GameCardProps {
@@ -21,7 +22,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToast }) => {
   };
 
   return (
-    <div className="game-card" onClick={() => navigate(`/game/${game.id}`)}>
+    <div className="game-card" onClick={() => navigate(`/product/${game.slug || toSlug(game.title)}`)}>
       <div style={{ position: 'relative' }}>
         {game.image ? (
           <img
@@ -55,7 +56,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToast }) => {
       <div className="game-card-footer">
         <button
           className="btn btn-secondary btn-sm"
-          onClick={(e) => { e.stopPropagation(); navigate(`/game/${game.id}`); }}
+          onClick={(e) => { e.stopPropagation(); navigate(`/product/${game.slug || toSlug(game.title)}`); }}
         >
           Details
         </button>

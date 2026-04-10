@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { api, debounce } from '../utils/api';
 import { Game, GamesResponse } from '../types';
 import GameCard from '../components/GameCard';
@@ -14,6 +14,7 @@ const PLATFORMS = ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X', 'Xbo
 
 const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
     const navigate = useNavigate();
+    const { pageSlug } = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
     const [games, setGames] = useState<Game[]>([]);
     const [loading, setLoading] = useState(true);
@@ -23,6 +24,8 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
     const [genre, setGenre] = useState(searchParams.get('genre') || 'all');
     const [platform, setPlatform] = useState(searchParams.get('platform') || 'all');
     const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 8;
 
     const loadGames = useCallback(async (s: string, g: string, p: string, so: string) => {
         setLoading(true);
@@ -32,6 +35,9 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
             setSearchParams(params);
             const data = await api.get<GamesResponse>(`/api/games?${params}`);
             setGames(data.games || []);
+            // If we are on a page > 1 and total results changed, we don't automatically reset 
+            // but the user's filter action usually should.
+            if (currentPage !== 1 && !pageSlug) setCurrentPage(1); 
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -48,22 +54,50 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        if (pageSlug && pageSlug.startsWith('page-')) {
+            const num = pageSlug.replace('page-', '');
+            const page = parseInt(num);
+            if (!isNaN(page) && page > 0) {
+                setCurrentPage(page);
+            }
+        } else {
+            setCurrentPage(1);
+        }
+    }, [pageSlug]);
+
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
+        navigate('/products'); // Clear page number on search
         debouncedLoad(e.target.value);
     };
 
     const handleGenre = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setGenre(e.target.value);
+        navigate('/products'); // Clear page number on filter change
         loadGames(search, e.target.value, platform, sort);
     };
     const handlePlatform = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setPlatform(e.target.value);
+        navigate('/products'); // Clear page number on filter change
         loadGames(search, genre, e.target.value, sort);
     };
     const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSort(e.target.value);
+        navigate('/products'); // Clear page number on filter change
         loadGames(search, genre, platform, e.target.value);
+    };
+
+    const totalPages = Math.ceil(games.length / ITEMS_PER_PAGE);
+    const paginatedGames = games.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+    const handlePageChange = (page: number) => {
+        if (page === 1) {
+            navigate('/products');
+        } else {
+            navigate(`/products/page-${page}`);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
@@ -123,9 +157,42 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
                         <p>Try adjusting your filters.</p>
                     </div>
                 ) : (
-                    games.map((g) => <GameCard key={g.id} game={g} onToast={onToast} />)
+                    paginatedGames.map((g) => <GameCard key={g.id} game={g} onToast={onToast} />)
                 )}
             </div>
+
+            {totalPages > 1 && (
+                <div className="pagination">
+                    <button 
+                        className="pagination-btn" 
+                        disabled={currentPage === 1}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                    >
+                        ←
+                    </button>
+                    
+                    {[...Array(totalPages)].map((_, i) => {
+                        const pageNum = i + 1;
+                        return (
+                            <button 
+                                key={pageNum}
+                                className={`pagination-btn ${currentPage === pageNum ? 'active' : ''}`}
+                                onClick={() => handlePageChange(pageNum)}
+                            >
+                                {pageNum}
+                            </button>
+                        );
+                    })}
+
+                    <button 
+                        className="pagination-btn" 
+                        disabled={currentPage === totalPages}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                        →
+                    </button>
+                </div>
+            )}
         </main>
     </>
   );

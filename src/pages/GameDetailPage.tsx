@@ -138,7 +138,7 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
     }
   `;
 
-  const { id } = useParams<{ id: string }>();
+  const { idOrSlug } = useParams<{ idOrSlug: string }>();
   const navigate = useNavigate();
   const [game, setGame] = useState<Game | null>(null);
   const [related, setRelated] = useState<Game[]>([]);
@@ -147,42 +147,54 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
   const [user, setUser] = useState<{ email: string } | null>(null);
   const [isInWishlist, setIsInWishlist] = useState(false);
 
-  const checkWishlistStatus = useCallback(async (email: string) => {
-    if (!id) return;
+  const checkWishlistStatus = useCallback(async (email: string, actualId: string) => {
+    if (!actualId) return;
     try {
       const res = await api.get<any>(`/api/wishlist?email=${encodeURIComponent(email)}`);
       if (res.success && Array.isArray(res.wishlist)) {
-        const found = res.wishlist.some((g: Game) => String(g.id) === String(id));
+        const found = res.wishlist.some((g: Game) => String(g.id) === String(actualId));
         setIsInWishlist(found);
       }
     } catch (error) {
       console.error('Error checking wishlist:', error);
     }
-  }, [id]);
+  }, []);
 
   useEffect(() => {
-    if (!id) { navigate('/'); return; }
+    if (!idOrSlug) { navigate('/'); return; }
     document.title = 'Game Details | GamexLK Store';
     setLoading(true);
 
     const auth = localStorage.getItem('userAuth');
+    let userEmail: string | null = null;
     if (auth) {
-      const userData = JSON.parse(auth);
-      setUser(userData);
-      checkWishlistStatus(userData.email);
+        const userData = JSON.parse(auth);
+        userEmail = userData.email;
+        setUser(userData);
     }
 
-    api.get<any>(`/api/games/${id}`)
+    let currentGameId: string = '';
+
+    api.get<any>(`/api/games/${idOrSlug}`)
       .then((data: any) => {
         if (!data.success) throw new Error(data.error || 'Game not found');
-        setGame(data.game);
-        document.title = `${data.game.title} | GamexLK Store`;
-        return api.get<any>(`/api/games?genre=${data.game.genre}`);
+        const gameData = data.game;
+        setGame(gameData);
+        currentGameId = gameData.id;
+        document.title = `${gameData.title} | GamexLK Store`;
+        
+        if (userEmail) {
+          checkWishlistStatus(userEmail, gameData.id);
+        }
+
+        return api.get<any>(`/api/games?genre=${gameData.genre}`);
       })
-      .then((d: any) => setRelated((d.games || []).filter((g: Game) => g.id !== id).slice(0, 4)))
+      .then((d: any) => {
+        setRelated((d.games || []).filter((g: Game) => g.id !== currentGameId).slice(0, 4));
+      })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [id, navigate, checkWishlistStatus]);
+  }, [idOrSlug, navigate, checkWishlistStatus]);
 
   const toggleWishlist = async () => {
     if (!user?.email) {
@@ -192,7 +204,9 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
 
     if (isInWishlist) {
       try {
-        const res = await api.del<any>(`/api/wishlist/${id}?email=${encodeURIComponent(user.email)}`);
+        const actualId = game?.id;
+        if (!actualId) return;
+        const res = await api.del<any>(`/api/wishlist/${actualId}?email=${encodeURIComponent(user.email)}`);
         if (res.success) {
           setIsInWishlist(false);
           onToast(`${game?.title} removed from wishlist.`, 'info');
@@ -202,7 +216,9 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
       }
     } else {
       try {
-        const payload = { email: user.email, gameId: id };
+        const actualId = game?.id;
+        if (!actualId) return;
+        const payload = { email: user.email, gameId: actualId };
         const res = await api.post<any>('/api/wishlist', payload);
         if (res.success) {
           setIsInWishlist(true);

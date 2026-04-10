@@ -56,7 +56,8 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<HomePage onToast={handleToast} />} />
         <Route path="/products" element={<AllProductsPage onToast={handleToast} />} />
-        <Route path="/game/:id" element={<GameDetailPage onToast={handleToast} />} />
+        <Route path="/products/:pageSlug" element={<AllProductsPage onToast={handleToast} />} />
+        <Route path="/product/:idOrSlug" element={<GameDetailPage onToast={handleToast} />} />
         <Route path="/signin" element={<UserLoginPage onToast={handleToast} />} />
         <Route path="/signup" element={<UserSignUpPage onToast={handleToast} />} />
         <Route path="/profile" element={<UserProfilePage onToast={handleToast} />} />
@@ -64,8 +65,8 @@ const App: React.FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/admin" element={<AdminDashboardPage onToast={handleToast} />} />
         <Route path="/checkout" element={<CheckoutPage onToast={handleToast} />} />
-        <Route path="*" element={<NotFoundPage />} />
         <Route path="/adminlogin" element={<AdminLoginPage onToast={handleToast} />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
       <Footer />

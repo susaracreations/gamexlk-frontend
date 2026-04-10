@@ -167,7 +167,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
                     onError={(e) => { (e.target as HTMLImageElement).src = '/default-game.svg'; }}
                   />
                   <div className="cart-item-info">
-                    <a href={`/game/${item.id}`} className="cart-item-title">{item.title}</a>
+                    <a href={`/product/${item.id}`} className="cart-item-title">{item.title}</a>
                     <div className="cart-item-price">{formatMoney(item.price)}</div>
                   </div>
                   <button

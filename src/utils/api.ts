@@ -81,3 +81,13 @@ export const debounce = <T extends (...args: any[]) => void>(fn: T, ms = 300) =>
     t = setTimeout(() => fn(...args), ms);
   };
 };
+
+export const toSlug = (text: string): string => {
+  return text.toString().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+};
+

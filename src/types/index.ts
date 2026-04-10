@@ -11,6 +11,7 @@ export interface Game {
   image?: string;
   trailer?: string;
   tags?: string[];
+  slug?: string;
 }
 
 export interface CartItem {

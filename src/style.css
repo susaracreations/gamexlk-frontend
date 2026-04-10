@@ -1665,7 +1665,7 @@ textarea.form-control {
 /* Styles for the hero dots navigation */
 .hero-dots {
   position: absolute;
-  bottom: 20px; /* Adjust as needed for vertical positioning */
+  bottom: 40px; /* Adjust as needed for vertical positioning */
   left: 50%;
   transform: translateX(-50%);
   z-index: 2; /* Ensure dots are above the banners */
@@ -1730,6 +1730,50 @@ textarea.form-control {
   }
 }
 
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 3rem;
+  padding: 1rem;
+}
+
+.pagination-btn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--glass-hover);
+  border-color: var(--accent-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(168, 85, 247, 0.2);
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  border-color: transparent;
+  color: white;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 /* Responsive adjustments (optional, but recommended) */
 @media (max-width: 900px) { /* Adjust breakpoint for tablet/mobile */
   /* General mobile adjustments */
@@ -1762,5 +1806,63 @@ textarea.form-control {
 
   .hero-dots {
     display: none;
+  }
+}
+
+/* ════════════════════════════════
+   PAGINATION
+════════════════════════════════ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+
+.pagination-btn {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--glass-border);
+  border-color: var(--accent-purple);
+  transform: translateY(-2px);
+}
+
+.pagination-btn.active {
+  background: var(--gradient-btn);
+  border-color: var(--accent-purple);
+  box-shadow: var(--shadow-glow);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  color: var(--text-muted);
+  padding: 0 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .pagination-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
   }
 }
