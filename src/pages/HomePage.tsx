@@ -39,7 +39,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   }, []);
 
   useEffect(() => {
-    document.title = 'GamexLK Store';
+    document.title = 'GamexLK Store | Buy Digital Games Sri Lanka #1 Store';
     loadGames('', 'all', 'all', 'newest');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -92,23 +92,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
             <button 
               className="btn btn-primary" 
               onClick={() => navigate('/products')}
-              style={{
-                padding: '1rem 2.5rem',
-                fontSize: '1.1rem',
-                borderRadius: '50px',
-                background: 'linear-gradient(135deg, var(--accent-purple), var(--accent-blue))',
-                border: 'none',
-                boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.3)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
-              }}
+              style={{ borderRadius: '50px', padding: '0.8rem 2.5rem' }}
             >
               View All Products
             </button>

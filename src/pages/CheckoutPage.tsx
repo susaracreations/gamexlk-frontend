@@ -134,7 +134,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
   };
 
   return (
-    <>
+    <div className="fade-in">
       <SubHero 
         title="Checkout"
         subtitle="Complete your purchase and start gaming. We offer instant delivery for almost all products."
@@ -143,113 +143,134 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
           { label: 'Checkout' }
         ]}
       />
-      <main className="container section" style={{ paddingTop: '50px', minHeight: '80vh' }}>
+      <main className="container section">
         {items.length === 0 ? (
-          <div className="empty-state glass-card">
-            <div className="icon">🛒</div>
-            <h3>Your Cart is Empty</h3>
-            <p>Looks like you haven't added any games yet.</p>
-            <button className="btn btn-primary" onClick={() => navigate('/')}>Browse Store</button>
+          <div className="empty-state glass-card" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+            <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🛒</div>
+            <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Your Cart is Empty</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem' }}>Looks like you haven't added any games yet.</p>
+            <button className="btn btn-primary btn-lg" onClick={() => navigate('/')}>Browse Store</button>
           </div>
         ) : (
-          <>
-
-
-          <div className="checkout-grid">
-            {/* Cart Items */}
-            <div className="cart-list">
-              {items.map(item => (
-                <div key={item.id} className="cart-item glass-card">
-                  <img
-                    src={item.image || '/default-game.svg'}
-                    alt={item.title}
-                    className="cart-item-img"
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/default-game.svg'; }}
-                  />
-                  <div className="cart-item-info">
-                    <a href={`/product/${item.id}`} className="cart-item-title">{item.title}</a>
-                    <div className="cart-item-price">{formatMoney(item.price)}</div>
+          <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '2.5rem' }}>
+            {/* Cart Items List */}
+            <div style={{ gridColumn: 'span 8' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem' }}>Your Selection</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {items.map(item => (
+                  <div key={item.id} className="glass-card" style={{ display: 'flex', alignItems: 'center', padding: '1.25rem', gap: '1.5rem' }}>
+                    <img
+                      src={item.image || '/default-game.svg'}
+                      alt={item.title}
+                      style={{ width: '120px', height: '68px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }}
+                      onError={(e: any) => { e.target.src = '/default-game.svg'; }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <a href={`/product/${item.id}`} style={{ fontSize: '1.1rem', fontWeight: 700, color: 'white', display: 'block', marginBottom: '4px' }}>{item.title}</a>
+                      <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--accent-purple-light)' }}>{formatMoney(item.price)}</div>
+                    </div>
+                    <button
+                      className="btn-danger"
+                      style={{ padding: '8px 12px', borderRadius: '12px', fontSize: '1rem' }}
+                      onClick={() => handleRemove(item.id)}
+                      title="Remove Item"
+                    >
+                      ✕
+                    </button>
                   </div>
-                  <button
-                    className="btn-icon-danger"
-                    onClick={() => handleRemove(item.id)}
-                    title="Remove Item"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* Sidebar */}
-            <div className="checkout-sidebar glass-card">
-              <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem' }}>Order Summary</h2>
+            {/* Checkout Form Sidebar */}
+            <div style={{ gridColumn: 'span 4' }}>
+              <div className="glass-card" style={{ padding: '2.5rem', position: 'sticky', top: '7rem' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.5rem' }}>Order Summary</h2>
 
-              <div className="summary-row"><span>Subtotal</span><span>LKR {total.toFixed(2)}</span></div>
-              <div className="summary-row"><span>Tax (Estimated)</span><span>LKR 0.00</span></div>
-              <div className="summary-row summary-total"><span>Total</span><span style={{ color: 'var(--accent-purple-light)' }}>LKR {total.toFixed(2)}</span></div>
-
-              <form className="checkout-form" onSubmit={handlePayment}>
-                <div className="form-group">
-                  <label className="form-label">Full Name</label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    className="form-control"
-                    placeholder="John Doe"
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Email Address</label>
-                  <input
-                    type="email"
-                    name="email"
-                    className="form-control"
-                    placeholder="john@example.com"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">WhatsApp Number</label>
-                  <input
-                    type="tel"
-                    name="whatsapp"
-                    className="form-control"
-                    placeholder="+94 7X XXX XXXX"
-                    value={formData.whatsapp}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Discord Username <span style={{ color: 'var(--text-secondary)', fontSize: '0.85em' }}>(Optional)</span></label>
-                  <input
-                    type="text"
-                    name="discord"
-                    className="form-control"
-                    placeholder="username#0000"
-                    value={formData.discord}
-                    onChange={handleInputChange}
-                  />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                    <span>Subtotal</span>
+                    <span>LKR {total.toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                    <span>Instant Delivery</span>
+                    <span style={{ color: 'var(--accent-green)' }}>FREE</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)', fontSize: '1.2rem', fontWeight: 900, color: 'white' }}>
+                    <span>Total</span>
+                    <span style={{ color: 'var(--accent-purple-light)' }}>LKR {total.toFixed(2)}</span>
+                  </div>
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>Place Order</button>
-                <div className="payment-methods">
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={generatePDF}>📄 Generate Invoice</button>
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={sendWhatsApp} style={{ color: '#25D366', borderColor: 'rgba(37, 211, 102, 0.3)' }}>💬 Order via WhatsApp</button>
-                </div>
-              </form>
+                <form onSubmit={handlePayment}>
+                  <div className="form-group">
+                    <label className="form-label">Full Name</label>
+                    <input
+                      type="text"
+                      name="fullName"
+                      className="form-control"
+                      placeholder="Enter your name"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email Address</label>
+                    <input
+                      type="email"
+                      name="email"
+                      className="form-control"
+                      placeholder="your@email.com"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">WhatsApp Number</label>
+                    <input
+                      type="tel"
+                      name="whatsapp"
+                      className="form-control"
+                      placeholder="+94 7X XXX XXXX"
+                      value={formData.whatsapp}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Discord <span style={{ opacity: 0.5 }}>(Optional)</span></label>
+                    <input
+                      type="text"
+                      name="discord"
+                      className="form-control"
+                      placeholder="Username#0000"
+                      value={formData.discord}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+
+                  <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>Place Order</button>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.5rem' }}>
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={generatePDF} style={{ justifyContent: 'center' }}>Invoice</button>
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={sendWhatsApp} style={{ justifyContent: 'center', color: '#25D366' }}>WhatsApp</button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-        </>
-      )}
-    </main>
-  </>
+        )}
+      </main>
+
+      <style>{`
+        @media (max-width: 1024px) {
+          .checkout-grid { grid-template-columns: 1fr !important; }
+          .checkout-grid > div { grid-column: span 12 !important; }
+        }
+      `}</style>
+    </div>
   );
 };
 

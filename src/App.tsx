@@ -5,6 +5,7 @@ import './style.css';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ToastContainer from './components/ToastContainer';
+import Loader from './components/Loader';
 import { useToast } from './hooks/useToast';
 
 import HomePage from './pages/HomePage';
@@ -36,15 +37,7 @@ const App: React.FC = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div style={{
-        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: '#0f172a', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center', zIndex: 99999
-      }}>
-        <div className="spinner" style={{ width: '60px', height: '60px', marginBottom: '1.5rem', borderWidth: '4px' }} />
-        <h2 style={{ color: 'white', letterSpacing: '2px', fontWeight: 700 }}>GAMEXLK</h2>
-      </div>
-    );
+    return <Loader fullScreen message="Initializing Store" />;
   }
 
   return (

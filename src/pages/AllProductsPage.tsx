@@ -4,6 +4,7 @@ import { api, debounce } from '../utils/api';
 import { Game, GamesResponse } from '../types';
 import GameCard from '../components/GameCard';
 import SubHero from '../components/SubHero';
+import Loader from '../components/Loader';
 
 interface AllProductsPageProps {
     onToast: (msg: string, type: string) => void;
@@ -49,7 +50,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
     const debouncedLoad = useCallback(debounce((val: string) => loadGames(val, genre, platform, sort), 350), [loadGames, genre, platform, sort]);
 
     useEffect(() => {
-        document.title = 'All Products | GamexLK Store';
+        document.title = 'All Products | Digital Games Sri Lanka | GamexLK Store';
         loadGames(search, genre, platform, sort);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -110,7 +111,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
                     { label: 'All Products' }
                 ]}
             />
-            <main className="container section" style={{ minHeight: '90vh' }}>
+            <main className="container section fade-in" style={{ minHeight: '90vh' }}>
                 <div className="glass-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
                 <div className="filters-inner">
                     <div className="search-bar">
@@ -139,10 +140,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
 
             <div className="games-grid">
                 {loading ? (
-                    <div className="loading-state" style={{ gridColumn: '1/-1' }}>
-                        <div className="spinner" />
-                        <p>Loading games...</p>
-                    </div>
+                    <Loader message="Fetching latest games..." />
                 ) : error ? (
                     <div className="empty-state" style={{ gridColumn: '1/-1' }}>
                         <div className="icon">⚠️</div>
