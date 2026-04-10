@@ -37,13 +37,13 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
             setGames(data.games || []);
             // If we are on a page > 1 and total results changed, we don't automatically reset 
             // but the user's filter action usually should.
-            if (currentPage !== 1 && !pageSlug) setCurrentPage(1); 
+            if (!pageSlug) setCurrentPage(1); 
         } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
-    }, [setSearchParams]);
+    }, [setSearchParams, pageSlug]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedLoad = useCallback(debounce((val: string) => loadGames(val, genre, platform, sort), 350), [loadGames, genre, platform, sort]);

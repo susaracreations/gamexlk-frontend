@@ -31,7 +31,7 @@ const PLATFORMS = [
   }
 ];
 
-const App = () => {
+const PlatformAnimationContainer: React.FC = () => {
   const styles = `
     .platform-container {
       width: 100%;
@@ -132,4 +132,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default PlatformAnimationContainer;

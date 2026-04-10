@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api, debounce } from '../utils/api';
+import { api } from '../utils/api';
 import { Game, GamesResponse } from '../types';
 import GameCard from '../components/GameCard';
 import SubHero from '../components/SubHero';
@@ -11,8 +11,7 @@ interface HomePageProps {
   onToast: (msg: string, type: string) => void;
 }
 
-const GENRES = ['Action', 'Adventure', 'RPG', 'Strategy', 'Sports', 'Racing', 'Fighting', 'Horror', 'Simulation', 'Puzzle', 'FPS', 'MOBA', 'Other'];
-const PLATFORMS = ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X', 'Xbox One', 'Nintendo Switch', 'Mobile', 'Multi-platform'];
+
 
 const HOMEPAGE_BANNERS = [
   { id: 'b1', imageUrl: 'https://i.ibb.co/SD49mKhf/5b55be116bb9.webp' },
@@ -25,7 +24,6 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
   const navigate = useNavigate();
   const [games, setGames] = useState<Game[]>([]);
   const [error, setError] = useState('');
-  const [total, setTotal] = useState(0);
 
   const isLoggedIn = !!localStorage.getItem('authToken');
 
@@ -35,7 +33,6 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
       const params = new URLSearchParams({ genre: g || 'all', platform: p || 'all', search: s, sort: so || 'newest' });
       const data = await api.get<GamesResponse>(`/api/games?${params}`);
       setGames(data.games || []);
-      setTotal(data.total);
     } catch (err: any) {
       setError(err.message);
     }
