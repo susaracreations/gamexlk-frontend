@@ -26,7 +26,7 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({ onToast }) => {
     const [platform, setPlatform] = useState(searchParams.get('platform') || 'all');
     const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 8;
+    const ITEMS_PER_PAGE = 10;
 
     const loadGames = useCallback(async (s: string, g: string, p: string, so: string) => {
         setLoading(true);

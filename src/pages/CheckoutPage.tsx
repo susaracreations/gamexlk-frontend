@@ -158,7 +158,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem' }}>Your Selection</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {items.map(item => (
-                  <div key={item.id} className="glass-card" style={{ display: 'flex', alignItems: 'center', padding: '1.25rem', gap: '1.5rem' }}>
+                  <div key={item.id} className="glass-card cart-item-row" style={{ display: 'flex', alignItems: 'center', padding: '1.25rem', gap: '1.5rem', position: 'relative' }}>
                     <img
                       src={item.image || '/default-game.svg'}
                       alt={item.title}
@@ -170,7 +170,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
                       <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--accent-purple-light)' }}>{formatMoney(item.price)}</div>
                     </div>
                     <button
-                      className="btn-danger"
+                      className="btn-danger remove-btn"
                       style={{ padding: '8px 12px', borderRadius: '12px', fontSize: '1rem' }}
                       onClick={() => handleRemove(item.id)}
                       title="Remove Item"
@@ -188,15 +188,15 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.5rem' }}>Order Summary</h2>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                  <div className="order-summary-row" style={{ color: 'var(--text-secondary)' }}>
                     <span>Subtotal</span>
                     <span>LKR {total.toFixed(2)}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                  <div className="order-summary-row" style={{ color: 'var(--text-secondary)' }}>
                     <span>Instant Delivery</span>
                     <span style={{ color: 'var(--accent-green)' }}>FREE</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)', fontSize: '1.2rem', fontWeight: 900, color: 'white' }}>
+                  <div className="order-summary-row" style={{ paddingTop: '1rem', borderTop: '1px solid var(--glass-border)', fontSize: '1.2rem', fontWeight: 900, color: 'white' }}>
                     <span>Total</span>
                     <span style={{ color: 'var(--accent-purple-light)' }}>LKR {total.toFixed(2)}</span>
                   </div>
@@ -265,9 +265,52 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onToast }) => {
       </main>
 
       <style>{`
+        .checkout-grid { width: 100% !important; margin: 0 !important; }
+        
         @media (max-width: 1024px) {
-          .checkout-grid { grid-template-columns: 1fr !important; }
+          .checkout-grid { 
+            grid-template-columns: 1fr !important; 
+            gap: 1.5rem !important; 
+          }
           .checkout-grid > div { grid-column: span 12 !important; }
+        }
+        @media (max-width: 768px) {
+          .checkout-grid { gap: 1rem !important; }
+          .checkout-grid .glass-card { 
+            padding: 1.25rem !important; 
+            width: 100% !important;
+            overflow: hidden !important;
+          }
+          .checkout-grid .glass-card h2 { font-size: 1.25rem !important; }
+          
+          /* Prevent price labels from splitting/overflowing */
+          .order-summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 0.9rem;
+          }
+          .order-summary-row span:last-child {
+            text-align: right;
+            word-break: break-all;
+          }
+
+          /* Stack cart items vertically on mobile */
+          .checkout-grid .cart-item-row { 
+            flex-direction: column !important; 
+            align-items: flex-start !important;
+            gap: 1rem !important;
+          }
+          .checkout-grid .cart-item-row img {
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 16/9;
+          }
+          .checkout-grid .cart-item-row .remove-btn {
+            position: absolute !important;
+            top: 10px !important;
+            right: 10px !important;
+          }
         }
       `}</style>
     </div>

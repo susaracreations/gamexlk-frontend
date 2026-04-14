@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import SubHero from '../components/SubHero';
 
 interface UserLoginPageProps {
@@ -27,10 +27,22 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
-            window.dispatchEvent(new Event('authUpdated'));
-            onToast('Welcome back!', 'success');
-            navigate('/');
+            // Check profile status
+            if (user.email) {
+                const userRef = doc(db, 'users', user.email);
+                const userDoc = await getDoc(userRef);
+                
+                localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
+                window.dispatchEvent(new Event('authUpdated'));
+                
+                if (!userDoc.exists() || !userDoc.data().onboardingComplete) {
+                    onToast('Almost there! Please complete your profile.', 'info');
+                    navigate('/onboarding');
+                } else {
+                    onToast('Welcome back!', 'success');
+                    navigate('/');
+                }
+            }
         } catch (error: any) {
             onToast(error.message || 'Login failed', 'error');
         } finally {
@@ -45,26 +57,38 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
             const result = await signInWithPopup(auth, provider); 
             const user = result.user;
 
-            // Check if user document exists in Firestore, if not create it
-            const userRef = doc(db, 'users', user.uid);
-            const userDoc = await getDoc(userRef);
+            if (user.email) {
+                try {
+                    // Use email as doc ID as requested
+                    const userRef = doc(db, 'users', user.email);
+                    const userDoc = await getDoc(userRef);
 
-            if (!userDoc.exists()) {
-                await setDoc(userRef, {
-                    email: user.email,
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    createdAt: new Date().toISOString(),
-                    role: 'user'
-                });
+                    localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
+                    window.dispatchEvent(new Event('authUpdated'));
+
+                    if (!userDoc.exists() || !userDoc.data().onboardingComplete) {
+                        onToast('Success! Click to complete your profile.', 'success');
+                        navigate('/onboarding');
+                    } else {
+                        onToast('Welcome back!', 'success');
+                        navigate('/');
+                    }
+                } catch (dbError: any) {
+                    console.error("🔥 Firestore Permission Error:", dbError);
+                    if (dbError.code === 'permission-denied') {
+                        onToast('Database access denied. Please check Firestore Security Rules.', 'error');
+                    } else {
+                        onToast('Signed in, but failed to load profile.', 'warning');
+                    }
+                    // Fallback: Proceed with login but warn about profile
+                    localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
+                    window.dispatchEvent(new Event('authUpdated'));
+                    navigate('/');
+                }
             }
-
-            localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
-            window.dispatchEvent(new Event('authUpdated'));
-            onToast('Successfully signed in with Google!', 'success');
-            navigate('/');
-        } catch (error: any) {
-            onToast(error.message || 'Google sign-in failed', 'error');
+        } catch (authError: any) {
+            console.error("🔑 Google Auth Error:", authError);
+            onToast(authError.message || 'Google sign-in failed', 'error');
         } finally {
             setLoading(false);
         }

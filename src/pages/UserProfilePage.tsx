@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
+import { db } from '../firebase';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import SubHero from '../components/SubHero';
+import Loader from '../components/Loader';
 
 interface UserProfilePageProps {
     onToast: (msg: string, type: string) => void;
@@ -10,11 +13,21 @@ interface UserProfilePageProps {
 const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
     const navigate = useNavigate();
     const [user, setUser] = useState<{ email: string; avatar?: string }>({ email: '' });
-    const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'wishlist'>('profile');
+    const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'wishlist' | 'settings'>('profile');
+    
+    // Profile Data from Firestore
+    const [profileData, setProfileData] = useState({
+        name: '',
+        whatsapp: '',
+        discord: ''
+    });
+
     const [orders, setOrders] = useState<any[]>([]);
     const [loadingOrders, setLoadingOrders] = useState(false);
     const [wishlist, setWishlist] = useState<any[]>([]);
     const [loadingWishlist, setLoadingWishlist] = useState(false);
+    const [savingSettings, setSavingSettings] = useState(false);
+    const [loadingSettings, setLoadingSettings] = useState(false);
 
     useEffect(() => {
         document.title = 'My Profile | GamexLK Store';
@@ -24,11 +37,32 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
             return;
         }
         try {
-            setUser(JSON.parse(auth));
+            const userData = JSON.parse(auth);
+            setUser(userData);
+            // Auto-load basic profile info into local state
+            fetchProfileData(userData.email);
         } catch {
-            setUser({ email: 'User' });
+            navigate('/signin');
         }
     }, [navigate]);
+
+    const fetchProfileData = async (email: string) => {
+        if (!email) return;
+        try {
+            const userRef = doc(db, 'users', email);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                setProfileData({
+                    name: data.name || '',
+                    whatsapp: data.whatsapp || '',
+                    discord: data.discord || ''
+                });
+            }
+        } catch (err) {
+            console.error("Error fetching profile:", err);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('userAuth');
@@ -49,12 +83,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
                 onToast(res.error || 'Failed to load orders', 'error');
             }
         } catch (err: any) {
-            console.error('Orders API Error:', err);
-            if (err.message && (err.message.includes('Unexpected token <') || err.message.includes('valid JSON'))) {
-                onToast('API not found. Please restart your backend server!', 'error');
-            } else {
-                onToast(err.message || 'Failed to connect to server', 'error');
-            }
+            onToast(err.message || 'Failed to connect to server', 'error');
         } finally {
             setLoadingOrders(false);
         }
@@ -78,6 +107,35 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
         }
     };
 
+    const loadSettings = async () => {
+        setActiveTab('settings');
+        setLoadingSettings(true);
+        await fetchProfileData(user.email);
+        setLoadingSettings(false);
+    };
+
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user.email) return;
+
+        setSavingSettings(true);
+        try {
+            const userRef = doc(db, 'users', user.email);
+            await updateDoc(userRef, {
+                name: profileData.name,
+                whatsapp: profileData.whatsapp,
+                discord: profileData.discord,
+                updatedAt: new Date().toISOString()
+            });
+            onToast('Profile updated successfully!', 'success');
+            setActiveTab('profile');
+        } catch (err: any) {
+            onToast(err.message || 'Failed to update profile', 'error');
+        } finally {
+            setSavingSettings(false);
+        }
+    };
+
     const removeFromWishlist = async (gameId: string) => {
         if (!user.email) return;
         try {
@@ -95,7 +153,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 512 * 1024) { // Limit to 512KB for localStorage
+        if (file.size > 512 * 1024) {
             onToast('Image is too large (max 500KB)', 'error');
             return;
         }
@@ -113,73 +171,150 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
     };
 
     return (
-        <>
+        <div className="fade-in">
+            <style>{`
+                .profile-name {
+                    font-size: 1.8rem;
+                    font-weight: 800;
+                    margin-bottom: 0.25rem;
+                }
+                @media (max-width: 768px) {
+                    .profile-name { font-size: 1.4rem; }
+                    .profile-header { gap: 1rem !important; }
+                }
+            `}</style>
             <SubHero 
-                title="My Profile"
+                title={activeTab === 'profile' ? "My Profile" : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                 subtitle="Manage your orders, wishlist, and profile settings."
                 breadcrumbItems={[
                     { label: 'Home', onClick: () => navigate('/') },
-                    { label: 'Account' }
-                ]}
+                    { label: 'Account', onClick: () => setActiveTab('profile') },
+                    { label: activeTab !== 'profile' ? activeTab.charAt(0).toUpperCase() + activeTab.slice(1) : '' }
+                ].filter(i => i.label !== '')}
             />
             <main className="container section" style={{ minHeight: '80vh' }}>
+            
             {activeTab === 'profile' && (
-                <div className="glass-card" style={{ padding: '2rem', maxWidth: 600, margin: '0 auto' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem' }}>
-                        <div style={{ position: 'relative', width: 80, height: 80 }}>
-                            <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--bg-primary)', border: '1px solid var(--glass-border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>
+                <div className="glass-card" style={{ padding: '2.5rem', maxWidth: 600, margin: '0 auto' }}>
+                    <div className="profile-header" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                        <div style={{ position: 'relative', width: 90, height: 90, flexShrink: 0 }}>
+                            <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--bg-primary)', border: '2px solid var(--glass-border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', boxShadow: 'var(--shadow-lg)' }}>
                                 {user.avatar ? <img src={user.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
                             </div>
-                            <label htmlFor="avatarInput" style={{ position: 'absolute', bottom: -5, right: -5, background: 'var(--accent-purple)', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid var(--bg-primary)', fontSize: '0.9rem', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>✏️</label>
+                            <label htmlFor="avatarInput" style={{ position: 'absolute', bottom: 0, right: 0, background: 'var(--accent-purple)', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '3px solid var(--bg-primary)', fontSize: '1rem', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', transition: '0.2s' }}>✏️</label>
                             <input id="avatarInput" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
                         </div>
                         <div>
-                            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>Welcome Back</h2>
-                            <p style={{ color: 'var(--text-secondary)' }}>{user.email || 'Gamer'}</p>
+                            <h2 className="profile-name">{profileData.name || 'Gamer'}</h2>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>{user.email}</p>
                         </div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }} onClick={loadOrders}>📦 My Orders</button>
-                        <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }} onClick={loadWishlist}>❤️ Wishlist</button>
-                        <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }} onClick={() => onToast('Settings feature coming soon!', 'info')}>⚙️ Settings</button>
-                        <div style={{ borderTop: '1px solid var(--glass-border)', margin: '0.5rem 0' }} />
-                        <button className="btn btn-danger" style={{ justifyContent: 'center' }} onClick={handleLogout}>Log Out</button>
+                        <button className="btn btn-secondary btn-lg" style={{ justifyContent: 'flex-start', padding: '1rem 1.5rem' }} onClick={loadOrders}>
+                            <span style={{ fontSize: '1.2rem', marginRight: '1rem' }}>📦</span> My Orders
+                        </button>
+                        <button className="btn btn-secondary btn-lg" style={{ justifyContent: 'flex-start', padding: '1rem 1.5rem' }} onClick={loadWishlist}>
+                            <span style={{ fontSize: '1.2rem', marginRight: '1rem' }}>❤️</span> Wishlist
+                        </button>
+                        <button className="btn btn-secondary btn-lg" style={{ justifyContent: 'flex-start', padding: '1rem 1.5rem' }} onClick={loadSettings}>
+                            <span style={{ fontSize: '1.2rem', marginRight: '1rem' }}>⚙️</span> Settings
+                        </button>
+                        
+                        <div style={{ borderTop: '1px solid var(--glass-border)', margin: '1rem 0' }} />
+                        
+                        <button className="btn btn-danger" style={{ justifyContent: 'center', padding: '0.8rem' }} onClick={handleLogout}>Log Out</button>
                     </div>
                 </div>
             )}
 
-            {activeTab === 'orders' && (
-                <div className="glass-card" style={{ maxWidth: 800, margin: '0 auto', padding: '2rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
+            {activeTab === 'settings' && (
+                <div className="glass-card" style={{ maxWidth: 600, margin: '0 auto', padding: '2.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2.5rem', gap: '1rem' }}>
                         <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('profile')}>← Back</button>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>My Orders</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800 }}>Profile Settings</h2>
+                    </div>
+
+                    {loadingSettings ? <Loader message="Fetching your info..." /> : (
+                        <form onSubmit={handleUpdateProfile}>
+                            <div className="form-group">
+                                <label className="form-label">Full Name</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={profileData.name}
+                                    onChange={e => setProfileData({...profileData, name: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">WhatsApp Number</label>
+                                <input
+                                    type="tel"
+                                    className="form-control"
+                                    value={profileData.whatsapp}
+                                    onChange={e => setProfileData({...profileData, whatsapp: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Discord Username (Optional)</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={profileData.discord}
+                                    onChange={e => setProfileData({...profileData, discord: e.target.value})}
+                                />
+                            </div>
+                            <button 
+                                type="submit" 
+                                className="btn btn-primary btn-lg" 
+                                style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}
+                                disabled={savingSettings}
+                            >
+                                {savingSettings ? 'Saving Changes...' : 'Save Profile'}
+                            </button>
+                        </form>
+                    )}
+                </div>
+            )}
+
+            {activeTab === 'orders' && (
+                <div className="glass-card" style={{ maxWidth: 900, margin: '0 auto', padding: '2.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2.5rem', gap: '1rem' }}>
+                        <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('profile')}>← Back</button>
+                        <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800 }}>My Orders</h2>
                     </div>
 
                     {loadingOrders ? (
-                        <div className="loading-state"><div className="spinner" /><p style={{ marginTop: '1rem' }}>Loading...</p></div>
+                        <Loader message="Fetching orders..." />
                     ) : orders.length === 0 ? (
                         <div className="empty-state">
-                            <div style={{ fontSize: '2rem' }}>📦</div>
-                            <p>No orders found for {user.email}</p>
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
+                            <p style={{ color: 'var(--text-secondary)' }}>No orders found for your account.</p>
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                             {orders.map(order => (
-                                <div key={order.id} style={{ background: 'rgba(255,255,255,0.03)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div key={order.id} className="glass-card" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.01)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
                                         <div>
-                                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Order #{order.id.split('-')[0]}</div>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString()}</div>
+                                            <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'white' }}>Order #{order.id.split('-')[0].toUpperCase()}</div>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>{new Date(order.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</div>
                                         </div>
-                                        <div style={{ fontWeight: 700, color: 'var(--accent-green)' }}>LKR {parseFloat(order.totalAmount).toFixed(2)}</div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <div style={{ fontWeight: 900, fontSize: '1.2rem', color: 'var(--accent-purple-light)' }}>LKR {parseFloat(order.totalAmount).toFixed(2)}</div>
+                                            <span className="badge" style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#4ade80', fontSize: '0.7rem' }}>COMPLETED</span>
+                                        </div>
                                     </div>
-                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.75rem' }}>
-                                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                                             {order.items?.map((item: any, i: number) => (
-                                                <li key={i} style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>• {item.title}</li>
+                                                <span key={i} style={{ background: 'rgba(255,255,255,0.05)', padding: '6px 12px', borderRadius: '12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                                    {item.title}
+                                                </span>
                                             ))}
-                                        </ul>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -189,29 +324,29 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
             )}
 
             {activeTab === 'wishlist' && (
-                <div className="glass-card" style={{ maxWidth: 800, margin: '0 auto', padding: '2rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
+                <div className="glass-card" style={{ maxWidth: 900, margin: '0 auto', padding: '2.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2.5rem', gap: '1rem' }}>
                         <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('profile')}>← Back</button>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>My Wishlist</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800 }}>My Wishlist</h2>
                     </div>
 
                     {loadingWishlist ? (
-                        <div className="loading-state"><div className="spinner" /><p style={{ marginTop: '1rem' }}>Loading...</p></div>
+                        <Loader message="Fetching wishlist..." />
                     ) : wishlist.length === 0 ? (
                         <div className="empty-state">
-                            <div style={{ fontSize: '2rem' }}>❤️</div>
-                            <p>Your wishlist is empty</p>
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>❤️</div>
+                            <p style={{ color: 'var(--text-secondary)' }}>Your wishlist is currently empty.</p>
                         </div>
                     ) : (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.5rem' }}>
                             {wishlist.map(game => (
-                                <div key={game.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
-                                    <img src={game.image} alt={game.title} style={{ width: '100%', height: 120, objectFit: 'cover' }} />
-                                    <div style={{ padding: '1rem' }}>
-                                        <h4 style={{ margin: '0 0 0.5rem', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{game.title}</h4>
+                                <div key={game.id} className="glass-card" style={{ padding: '0', overflow: 'hidden', background: 'rgba(255,255,255,0.02)' }}>
+                                    <img src={game.image} alt={game.title} style={{ width: '100%', height: 140, objectFit: 'cover' }} />
+                                    <div style={{ padding: '1.25rem' }}>
+                                        <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{game.title}</h4>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <span style={{ color: 'var(--accent-green)', fontWeight: 'bold' }}>LKR {game.price}</span>
-                                            <button className="btn btn-danger btn-sm" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={() => removeFromWishlist(game.id)}>Remove</button>
+                                            <span style={{ color: 'white', fontWeight: 800 }}>LKR {game.price}</span>
+                                            <button className="btn btn-danger btn-sm" onClick={() => removeFromWishlist(game.id)}>Remove</button>
                                         </div>
                                     </div>
                                 </div>
@@ -221,7 +356,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
                 </div>
             )}
         </main>
-    </>
+    </div>
   );
 };
 

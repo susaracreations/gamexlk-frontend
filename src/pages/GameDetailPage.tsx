@@ -155,10 +155,10 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
       />
 
       <main className="container section" style={{ paddingBottom: '6rem' }}>
-        <div className="grid-layout" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '2.5rem' }}>
+        <div className="grid-layout" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '1.5rem' }}>
           
           {/* Main Content (8/12) */}
-          <div style={{ gridColumn: 'span 8' }}>
+          <div style={{ gridColumn: 'span 8', minWidth: 0 }}>
             
             {/* Immersive Cover Image */}
             <div className="glass-card" style={{ overflow: 'hidden', position: 'relative', border: 'none', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow-lg)' }}>
@@ -170,25 +170,35 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
                   onError={(e: any) => { e.target.src = '/default-game.svg'; }} 
                 />
               ) : (
-                <div style={{ width: '100%', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem', background: 'var(--gradient-hero)' }}>🎮</div>
+                <img src="/default-game.svg" alt="Default Game" style={{ width: '100%', height: '350px', objectFit: 'cover', display: 'block' }} />
               )}
               
               {/* Detailed Overlay Labels */}
               <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0, padding: '2rem',
-                background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end'
+                background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%)',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
+                gap: '2rem'
               }}>
-                <div>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                     <span className="badge badge-platform">{game.platform}</span>
                     <span className="badge badge-genre">{game.genre}</span>
                   </div>
-                  <h1 style={{ fontSize: '2.8rem', fontWeight: 900, textShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>{game.title}</h1>
+                  <h1 style={{ 
+                    fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', 
+                    lineHeight: '1.2',
+                    fontWeight: 900, 
+                    textShadow: '0 4px 20px rgba(0,0,0,0.8)',
+                    margin: 0,
+                    overflowWrap: 'break-word'
+                  }}>
+                    {game.title}
+                  </h1>
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <StarRating rating={game.rating} />
-                  <div style={{ fontSize: '0.9rem', opacity: 0.8, marginTop: '4px' }}>{parseFloat(String(game.rating)).toFixed(1)} / 5.0</div>
+                  <div style={{ fontSize: '0.9rem', opacity: 0.8, marginTop: '4px', color: 'white' }}>{parseFloat(String(game.rating)).toFixed(1)} / 5.0</div>
                 </div>
               </div>
             </div>
@@ -273,8 +283,8 @@ const GameDetailPage: React.FC<GameDetailPageProps> = ({ onToast }) => {
       </main>
 
       <style>{`
-        @media (max-width: 1024px) {
-          .grid-layout { grid-template-columns: 1fr !important; }
+        @media (max-width: 1100px) {
+          .grid-layout { grid-template-columns: 1fr !important; gap: 2rem !important; }
           .grid-layout > div { grid-column: span 12 !important; }
         }
       `}</style>

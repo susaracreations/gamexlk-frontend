@@ -14,6 +14,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import NoticeBar from './components/NoticeBar';
 import UserLoginPage from './pages/UserLoginPage';
 import UserSignUpPage from './pages/UserSignUpPage';
+import OnboardingPage from './pages/OnboardingPage';
 import UserProfilePage from './pages/UserProfilePage';
 import AboutPage from './pages/AboutPage';
 import AddGamePage from './pages/AddGamePage';
@@ -53,6 +54,7 @@ const App: React.FC = () => {
         <Route path="/product/:idOrSlug" element={<GameDetailPage onToast={handleToast} />} />
         <Route path="/signin" element={<UserLoginPage onToast={handleToast} />} />
         <Route path="/signup" element={<UserSignUpPage onToast={handleToast} />} />
+        <Route path="/onboarding" element={<OnboardingPage onToast={handleToast} />} />
         <Route path="/profile" element={<UserProfilePage onToast={handleToast} />} />
         <Route path="/add-game" element={<AddGamePage onToast={handleToast} />} />
         <Route path="/about" element={<AboutPage />} />

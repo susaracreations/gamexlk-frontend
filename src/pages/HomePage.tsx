@@ -64,11 +64,7 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
         />
       </section>
       <main className="container section" style={{ paddingBottom: '4rem' }}>
-        <div className="games-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-          gap: '1.5rem'
-        }}>
+        <div className="games-grid">
           {error ? (
             <div className="empty-state" style={{ gridColumn: '1/-1' }}>
               <div className="icon">⚠️</div>
@@ -83,11 +79,11 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
               <p>Try adjusting your search or filters{isLoggedIn ? ', or ' : '.'}{isLoggedIn && <a href="/add-game" style={{ color: 'var(--accent-purple)' }}>add a new game</a>}</p>
             </div>
           ) : (
-            games.slice(0, 8).map((g) => <GameCard key={g.id} game={g} onToast={onToast} />)
+            games.slice(0, 5).map((g) => <GameCard key={g.id} game={g} onToast={onToast} />)
           )}
         </div>
         
-        {games.length > 8 && (
+        {games.length > 5 && (
           <div style={{ marginTop: '3rem', display: 'flex', justifyContent: 'center' }}>
             <button 
               className="btn btn-primary" 

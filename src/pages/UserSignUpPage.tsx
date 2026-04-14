@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SubHero from '../components/SubHero';
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 interface UserSignUpPageProps {
     onToast: (msg: string, type: string) => void;
@@ -40,12 +42,20 @@ const UserSignUpPage: React.FC<UserSignUpPageProps> = ({ onToast }) => {
 
         setLoading(true);
 
-        // Mock registration
-        setTimeout(() => {
-            setLoading(false);
-            onToast('Account created successfully! Please sign in.', 'success');
-            navigate('/signin');
-        }, 1500);
+        createUserWithEmailAndPassword(auth, formData.email, formData.password)
+            .then(async (userCredential) => {
+                await updateProfile(userCredential.user, { displayName: formData.name });
+                setLoading(false);
+                onToast('Account created! Let\'s setup your profile.', 'success');
+                // Auto login and onboarding redirect
+                localStorage.setItem('userAuth', JSON.stringify({ email: userCredential.user.email, uid: userCredential.user.uid }));
+                window.dispatchEvent(new Event('authUpdated'));
+                navigate('/onboarding');
+            })
+            .catch((error: any) => {
+                setLoading(false);
+                onToast(error.message || 'Failed to create account', 'error');
+            });
     };
 
     return (

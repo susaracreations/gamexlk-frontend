@@ -36,9 +36,12 @@ const PlatformAnimationContainer: React.FC = () => {
     .platform-container {
       width: 100%;
       background: #020617;
-      padding: 3rem 0;
+      padding: 4rem 0;
+      margin: 2.5rem 0;
       overflow: hidden;
       position: relative;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
     }
 
     .platform-mask {
@@ -101,7 +104,10 @@ const PlatformAnimationContainer: React.FC = () => {
 
     @media (max-width: 768px) {
       .platform-track { gap: 4rem; animation-duration: 30s; }
-      .platform-container { padding: 2.5rem 0; }
+      .platform-container { 
+        padding: 3rem 0; 
+        margin: 1.5rem 0;
+      }
       .platform-icon-img { width: 24px; height: 24px; }
       .platform-label { font-size: 0.75rem; }
     }

@@ -45,7 +45,7 @@
   --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   --notice-bar-default-height: 36px;
-  --navbar-default-height: 72px;
+  --navbar-default-height: 60px;
 
   /* Global Shadows */
   --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
@@ -331,136 +331,182 @@ a {
 }
 
 /* ════════════════════════════════
-   GAME CARDS
+   GAME CARDS (V3 Premium Design)
 ════════════════════════════════ */
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
 }
 
-.game-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: var(--transition-bounce);
+@media (max-width: 768px) {
+  .games-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem; 
+  }
+
+  .game-card-v3 {
+    min-width: 0; /* Prevents long text from pushing column width */
+  }
+  
+  .game-card-name {
+    font-size: 13px;
+  }
+  
+  .game-card-image-wrapper {
+    margin-bottom: 8px;
+  }
+}
+
+.game-card-v3 {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  transition: transform 0.3s ease;
   cursor: pointer;
+  width: 100%;
+}
+
+.game-card-v3:hover {
+  transform: translateY(-5px);
+}
+
+.game-card-image-wrapper {
   position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.game-card:hover {
-  transform: translateY(-8px) scale(1.01);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.3);
-}
-
-.game-card-img {
   width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  display: block;
-}
-
-.game-card-img-placeholder {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: var(--gradient-hero);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-}
-
-.game-card-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: var(--accent-purple);
-  color: white;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 0.85rem;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-.game-card-body {
-  padding: 1.25rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.game-card-genre {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--accent-cyan);
-}
-
-.game-card-title {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.3;
-}
-
-.game-card-desc {
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
   overflow: hidden;
+  background: #0f172a;
+  margin-bottom: 12px;
 }
 
-.game-card-meta {
+.game-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.game-card-v3:hover .game-card-image {
+  transform: scale(1.05);
+}
+
+.game-card-image-placeholder {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--glass-border);
-}
-
-.game-rating {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.82rem;
-  color: var(--accent-yellow);
-  font-weight: 600;
-}
-
-.game-price {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--accent-purple-light);
-}
-
-.game-price.free {
-  color: var(--accent-green);
-}
-
-.game-card-footer {
-  padding: 0 1.25rem 1.25rem;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.game-card-footer .btn {
-  flex: 1;
   justify-content: center;
+  font-size: 2.5rem;
+  background: var(--gradient-hero);
+}
+
+.game-platform-tag {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.game-platform-tag img {
+  height: 14px;
+  width: auto;
+  opacity: 0.9;
+}
+
+.game-card-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+.game-card-v3:hover .game-card-hover-overlay {
+  opacity: 1;
+}
+
+.btn-add-cart-mini {
+  background: var(--accent-cyan);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.btn-add-cart-mini:hover {
+  transform: scale(1.1);
+}
+
+.game-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.game-card-subtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.game-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.game-card-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-card-discount-badge {
+  background: #38bdf8;
+  color: #0c4a6e;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.game-card-old-price {
+  font-size: 12px;
+  color: #64748b;
+  text-decoration: line-through;
+}
+
+.game-card-current-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
 }
 
 /* ════════════════════════════════
@@ -1935,14 +1981,27 @@ textarea.form-control {
 
 /* ── Responsive Rules ── */
 @media (max-width: 1024px) {
-  .container { padding: 0 1.5rem; }
-  .section { padding: 3rem 0; }
+  .container { 
+    padding: 0 1.25rem !important; 
+  }
+  .section { 
+    padding: 3rem 0; 
+  }
 }
 
 @media (max-width: 768px) {
   :root {
     --notice-bar-default-height: 32px;
     --navbar-default-height: 64px;
+    --radius-lg: 20px; /* Slightly smaller radius for mobile cards */
+  }
+  
+  .container {
+    padding: 0 1rem !important;
+  }
+
+  .section {
+    padding: 2.5rem 0;
   }
   
   body {

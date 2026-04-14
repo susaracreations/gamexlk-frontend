@@ -21,6 +21,7 @@ const SubHero: React.FC<SubHeroProps> = ({ title, subtitle, breadcrumbItems, bgI
     }
     @media (max-width: 768px) {
       .sub-hero h1 { font-size: 2.5rem !important; }
+      .sub-hero { margin-bottom: 2.5rem !important; }
     }
   `;
 
