@@ -216,7 +216,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ onToast }) => {
                 <div key={`${review.id}-${i}`} className="glass-card review-card">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <div className="review-avatar">
-                      👤
+                      🧿
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
