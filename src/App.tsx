@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './style.css';
+import './mobile.css';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';

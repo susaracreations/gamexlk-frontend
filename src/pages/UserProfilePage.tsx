@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
-import { db } from '../firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db, auth } from '../firebase';
 import SubHero from '../components/SubHero';
 import Loader from '../components/Loader';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 interface UserProfilePageProps {
     onToast: (msg: string, type: string) => void;
@@ -178,9 +178,23 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
                     font-weight: 800;
                     margin-bottom: 0.25rem;
                 }
+                .profile-avatar-container {
+                    width: 90px;
+                    height: 90px;
+                    font-size: 3rem;
+                }
+                .avatar-edit-badge {
+                    width: 32px;
+                    height: 32px;
+                    font-size: 1rem;
+                }
                 @media (max-width: 768px) {
                     .profile-name { font-size: 1.4rem; }
                     .profile-header { gap: 1rem !important; }
+                    .profile-avatar-container {
+                        width: 70px; height: 70px; font-size: 2.2rem;
+                    }
+                    .avatar-edit-badge { width: 26px; height: 26px; font-size: 0.8rem; }
                 }
             `}</style>
             <SubHero 
@@ -197,11 +211,15 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ onToast }) => {
             {activeTab === 'profile' && (
                 <div className="glass-card" style={{ padding: '2.5rem', maxWidth: 600, margin: '0 auto' }}>
                     <div className="profile-header" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2.5rem' }}>
-                        <div style={{ position: 'relative', width: 90, height: 90, flexShrink: 0 }}>
-                            <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--bg-primary)', border: '2px solid var(--glass-border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', boxShadow: 'var(--shadow-lg)' }}>
-                                {user.avatar ? <img src={user.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
+                        <div className="profile-avatar-container" style={{ position: 'relative', flexShrink: 0 }}>
+                            <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--bg-primary)', border: '2px solid var(--glass-border)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'inherit', boxShadow: 'var(--shadow-lg)' }}>
+                                {auth.currentUser?.photoURL || user.avatar ? (
+                                    <img src={auth.currentUser?.photoURL || user.avatar || ''} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    '👤'
+                                )}
                             </div>
-                            <label htmlFor="avatarInput" style={{ position: 'absolute', bottom: 0, right: 0, background: 'var(--accent-purple)', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '3px solid var(--bg-primary)', fontSize: '1rem', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', transition: '0.2s' }}>✏️</label>
+                            <label htmlFor="avatarInput" className="avatar-edit-badge" style={{ position: 'absolute', bottom: 0, right: 0, background: 'var(--accent-purple)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '3px solid var(--bg-primary)', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', transition: '0.2s' }}>✏️</label>
                             <input id="avatarInput" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
                         </div>
                         <div>

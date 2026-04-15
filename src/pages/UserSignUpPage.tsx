@@ -48,7 +48,12 @@ const UserSignUpPage: React.FC<UserSignUpPageProps> = ({ onToast }) => {
                 setLoading(false);
                 onToast('Account created! Let\'s setup your profile.', 'success');
                 // Auto login and onboarding redirect
-                localStorage.setItem('userAuth', JSON.stringify({ email: userCredential.user.email, uid: userCredential.user.uid }));
+                localStorage.setItem('userAuth', JSON.stringify({ 
+                    email: userCredential.user.email, 
+                    uid: userCredential.user.uid,
+                    name: formData.name,
+                    avatar: userCredential.user.photoURL // Persist Google avatar if signing up via Google
+                }));
                 window.dispatchEvent(new Event('authUpdated'));
                 navigate('/onboarding');
             })

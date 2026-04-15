@@ -39,7 +39,6 @@ const Footer: React.FC = () => {
           <ul>
             <li><Link to="/about">About Us</Link></li>
             <li><Link to="/userlogin">User Sign In</Link></li>
-            <li><Link to="/adminlogin">Admin Login</Link></li>
             <li><a href="mailto:support@gamexlk.com">Contact Support</a></li>
           </ul>
         </div>

@@ -32,7 +32,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
                 const userRef = doc(db, 'users', user.email);
                 const userDoc = await getDoc(userRef);
                 
-                localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
+                localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid, avatar: user.photoURL }));
                 window.dispatchEvent(new Event('authUpdated'));
                 
                 if (!userDoc.exists() || !userDoc.data().onboardingComplete) {
@@ -63,7 +63,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
                     const userRef = doc(db, 'users', user.email);
                     const userDoc = await getDoc(userRef);
 
-                    localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
+                    localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid, avatar: user.photoURL }));
                     window.dispatchEvent(new Event('authUpdated'));
 
                     if (!userDoc.exists() || !userDoc.data().onboardingComplete) {
@@ -81,7 +81,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onToast }) => {
                         onToast('Signed in, but failed to load profile.', 'warning');
                     }
                     // Fallback: Proceed with login but warn about profile
-                    localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid }));
+                    localStorage.setItem('userAuth', JSON.stringify({ email: user.email, uid: user.uid, avatar: user.photoURL }));
                     window.dispatchEvent(new Event('authUpdated'));
                     navigate('/');
                 }

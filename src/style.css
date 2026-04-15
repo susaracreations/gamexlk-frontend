@@ -1,6 +1,5 @@
 /* ═══════════════════════════════════════════════════════
    GAMEXLK STORE — Global Styles
-   Dark Glassmorphism | Neon Purple + Cyan Accents
 ═══════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
@@ -36,10 +35,10 @@
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
   --shadow-btn: 0 4px 20px rgba(168, 85, 247, 0.4);
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
 
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -203,54 +202,91 @@ a {
 
 
 .notice-bar {
+  /* Positioning & Layout */
   position: fixed;
   top: var(--navbar-height, var(--navbar-default-height));
   left: 0;
   width: 100%;
-  min-height: var(--notice-bar-default-height); /* Use min-height to allow content to wrap */
-  padding: 8px 0; /* Vertical padding */
-  background: var(--gradient-btn);
+  z-index: 1100;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1100;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
+  /* Sizing & Spacing */
+  min-height: 40px; 
+  padding: 10px 0;
+  
+  /* Modern Professional Aesthetic */
+  background: var(--gradient-btn); /* Keep your variable, but ensure it's a subtle gradient */
+  backdrop-filter: blur(8px); /* Adds a high-end feel if background has transparency */
+  color: #ffffff;
+  
+  /* Typography */
+  font-size: 0.875rem;
+  font-weight: 500; /* 600 can be a bit 'heavy'; 500 is more elegant */
+  letter-spacing: -0.01em;
+  
+  /* Shadow & Border */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .notice-bar .container {
+  max-width: 1200px; /* Prevents text from stretching too wide on ultrawide monitors */
+  margin: 0 auto;
   position: relative;
-  text-align: center;
-  padding: 0 1.5rem; /* Horizontal padding */
-  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem;
 }
 
 .notice-bar p {
   margin: 0;
-  padding: 0 40px; /* Space for close button */
-  line-height: 1.2;
+  line-height: 1.4; /* Improved readability */
+  text-align: center;
+}
+
+/* Added a link style for professionalism */
+.notice-bar a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+  margin-left: 5px;
+  transition: opacity 0.2s;
+}
+
+.notice-bar a:hover {
+  opacity: 0.8;
 }
 
 .notice-close-btn {
   position: absolute;
-  right: 0;
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
+  background: rgba(255, 255, 255, 0.1); /* Subtle button shape */
+  border-radius: 6px;
   border: none;
   color: white;
   cursor: pointer;
-  font-size: 1.2rem;
-  padding: 5px 10px; /* Default padding for close button */
+  height: 28px;
+  width: 28px;
   display: flex;
   align-items: center;
-  transition: opacity 0.2s;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .notice-close-btn:hover {
-  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.notice-close-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 
@@ -258,77 +294,77 @@ a {
 
 
 /* ════════════════════════════════
-   BUTTONS
+    SHARP 3D MINIMALIST THEME
 ════════════════════════════════ */
+:root {
+  --p-deep: #4c1d95;    /* Main Purple */
+  --p-light: #ffffff;   /* Main White */
+  --p-shadow: #2e1065;  /* Darker Purple for 3D Depth */
+  --w-shadow: #e2e8f0;  /* Grey shadow for White buttons */
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 0.75rem 1.75rem;
-  border-radius: var(--radius-md);
+  justify-content: center;
+  padding: 0.8rem 2rem;
+  gap: 10px;
+  
+  /* Sharp & Professional */
+  border-radius: 0;
   font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  
   cursor: pointer;
-  border: none;
-  transition: var(--transition);
   white-space: nowrap;
+  transition: all 0.1s ease; /* Snappy transition for 3D feel */
+  position: relative;
 }
 
+/* --- PRIMARY (Purple 3D) --- */
 .btn-primary {
-  background: white;
-  color: #050510;
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+  background: var(--p-deep);
+  color: white;
+  border: 2px solid var(--p-deep);
+  /* Solid 3D Shadow */
+  box-shadow: 4px 4px 0px 0px var(--p-shadow);
 }
 
 .btn-primary:hover {
-  background: #f8fafc;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0px 0px var(--p-shadow);
 }
 
+.btn-primary:active {
+  transform: translate(4px, 4px); /* Pushes down to the shadow origin */
+  box-shadow: 0px 0px 0px 0px var(--p-shadow);
+}
+
+/* --- SECONDARY (White 3D) --- */
 .btn-secondary {
-  background: var(--glass);
-  color: var(--text-primary);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(8px);
+  background: var(--p-light);
+  color: var(--p-deep);
+  border: 2px solid var(--p-deep);
+  box-shadow: 4px 4px 0px 0px var(--p-deep);
 }
 
 .btn-secondary:hover {
-  background: var(--glass-hover);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0px 0px var(--p-deep);
 }
 
-.btn-danger {
-  background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  backdrop-filter: blur(8px);
+.btn-secondary:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px var(--p-deep);
 }
 
-.btn-danger:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.4);
-  color: #ef4444;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
-}
+/* --- SIZES --- */
+.btn-sm { padding: 0.5rem 1.2rem; font-size: 0.7rem; }
+.btn-lg { padding: 1.2rem 3rem; font-size: 1rem; }
 
-.btn-sm {
-  padding: 0.5rem 1.1rem;
-  font-size: 0.85rem;
-}
-
-.btn-lg {
-  padding: 1rem 2.5rem;
-  font-size: 1.05rem;
-}
-
-.btn:active {
-  transform: scale(0.97) !important;
-}
 
 /* ════════════════════════════════
    GAME CARDS (V3 Premium Design)
@@ -375,7 +411,7 @@ a {
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
-  border-radius: 12px;
+  border-radius: 0px; 
   overflow: hidden;
   background: #0f172a;
   margin-bottom: 12px;
@@ -410,7 +446,7 @@ a {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -494,7 +530,7 @@ a {
   font-size: 11px;
   font-weight: 800;
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: 0px;
 }
 
 .game-card-old-price {
@@ -517,7 +553,7 @@ a {
   align-items: center;
   gap: 4px;
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: 0px;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -673,7 +709,7 @@ textarea.form-control {
   appearance: none;
   width: 100%;
   height: 6px;
-  border-radius: 3px;
+  border-radius: 0px;
   background: rgba(255, 255, 255, 0.1);
   outline: none;
   cursor: pointer;
@@ -743,75 +779,76 @@ textarea.form-control {
 }
 
 /* ════════════════════════════════
-   TOAST NOTIFICATIONS
-════════════════════════════════ */
+    SIMPLIFIED PILL TOASTS
+   ════════════════════════════════ */
 .toast-container {
   position: fixed;
-  top: 90px;
-  right: 1.5rem;
+  /* Centering logic */
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  align-items: center; /* Ensures toasts stack centrally */
+  gap: 0.5rem;
   pointer-events: none;
 }
 
 .toast {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  padding: 1rem 1.25rem;
-  min-width: 280px;
+  /* "Pill" shape: Use a large border-radius */
+  background: #ffffff; 
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px; 
+  padding: 0.6rem 1.5rem;
+  min-width: 200px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  justify-content: center;
+  gap: 0.5rem;
   pointer-events: all;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  
+  /* Smoother transition */
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.toast.success {
-  border-color: rgba(34, 197, 94, 0.4);
-}
-
-.toast.error {
-  border-color: rgba(239, 68, 68, 0.4);
-}
-
-.toast.info {
-  border-color: rgba(168, 85, 247, 0.4);
-}
+/* Minimalist color indicators (Text & Icon only) */
+.toast.success { color: #059669; border-color: #bbf7d0; }
+.toast.error   { color: #dc2626; border-color: #fecaca; }
+.toast.info    { color: #2563eb; border-color: #bfdbfe; }
 
 .toast-icon {
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .toast-msg {
-  font-size: 0.9rem;
-  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151; /* Neutral dark text */
+  white-space: nowrap;
+}
+
+/* Modified Animations for Top-Center */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .toast.fadeout {
-  animation: slideOut 0.3s ease forwards;
+  animation: fadeOut 0.2s ease forwards;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(120%);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideOut {
+@keyframes fadeOut {
   to {
     opacity: 0;
-    transform: translateX(120%);
+    transform: scale(0.95);
   }
 }
 
@@ -1658,7 +1695,7 @@ textarea.form-control {
   color: white;
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: 0px;
   cursor: pointer;
   transition: var(--transition);
   display: flex;
@@ -1878,7 +1915,7 @@ textarea.form-control {
   border: 1px solid var(--glass-border);
   color: var(--text-primary);
   padding: 0.6rem 1.2rem;
-  border-radius: 12px;
+  border-radius: 0px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1993,7 +2030,7 @@ textarea.form-control {
   :root {
     --notice-bar-default-height: 32px;
     --navbar-default-height: 64px;
-    --radius-lg: 20px; /* Slightly smaller radius for mobile cards */
+    --radius-lg: 0px; /* Slightly smaller radius for mobile cards */
   }
   
   .container {

@@ -6,6 +6,7 @@ import GameCard from '../components/GameCard';
 import SubHero from '../components/SubHero';
 import BannerCarousel from '../components/BannerCarousel';
 import PlatformAnimationContainer from '../components/PlatformAnimationContainer';
+import ReviewSection from '../components/ReviewSection';
 
 interface HomePageProps {
   onToast: (msg: string, type: string) => void;
@@ -84,17 +85,20 @@ const HomePage: React.FC<HomePageProps> = ({ onToast }) => {
         </div>
         
         {games.length > 5 && (
-          <div style={{ marginTop: '3rem', display: 'flex', justifyContent: 'center' }}>
+          <div className="view-all-container" style={{ marginTop: '3rem', display: 'flex', justifyContent: 'center' }}>
             <button 
               className="btn btn-primary" 
               onClick={() => navigate('/products')}
-              style={{ borderRadius: '50px', padding: '0.8rem 2.5rem' }}
+              style={{ borderRadius: '0px', padding: '0.8rem 2.5rem' }}
             >
               View All Products
             </button>
           </div>
         )}
       </main>
+
+      {/* Reviews Section */}
+      <ReviewSection onToast={onToast} />
     </>
   );
 };

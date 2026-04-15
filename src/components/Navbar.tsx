@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Cart } from '../utils/cart';
+import { auth } from '../firebase';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -238,14 +239,14 @@ const Navbar: React.FC = () => {
         <div className="nav-actions">
           {user ? (
             <Link to="/profile" className="cart-btn" aria-label="My Profile" style={{ padding: 0, width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.2)' }}>
-              {user.avatar ? (
-                <img src={user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              {auth.currentUser?.photoURL || user.avatar ? (
+                <img src={auth.currentUser?.photoURL || user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <span style={{ fontSize: '1rem' }}>👤</span>
               )}
             </Link>
           ) : (
-            <Link to="/signin" className="btn btn-secondary" style={{ padding: '0.4rem 1rem', fontSize: '0.75rem', borderRadius: '4px' }}>Sign In</Link>
+            <Link to="/signin" className="btn btn-secondary" style={{ padding: '0.4rem 1rem', fontSize: '0.75rem', borderRadius: '0px' }}>Sign In</Link>
           )}
 
           <button className="cart-btn" onClick={() => navigate('/checkout')} aria-label="Cart">
